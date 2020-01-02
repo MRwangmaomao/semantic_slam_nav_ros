@@ -1,5 +1,9 @@
 lib/*
 Vocabulary/*
 Vocabulary/ORBvoc.txt
-Thirdparty/*
 build/*
+
+data/map.bin
+data/octomap.ot
+data/KeyFrameTrajectory.txt
+data/CameraTrajectory.txt
