@@ -192,3 +192,9 @@ ${PROJECT_SOURCE_DIR}/lib/liborbslam_semantic_nav_ros.so
 ${PCL_LIBRARIES}  
 )
 
+add_executable(tts_subscribe src/tts_subscribe.cpp)
+target_link_libraries(tts_subscribe ${catkin_LIBRARIES} libmsc.so -ldl -lpthread)
+
+add_executable(iat_publish src/iat_publish.cpp src/speech_recognizer.c src/linuxrec.c)
+target_link_libraries(iat_publish ${catkin_LIBRARIES} libmsc.so -ldl -lpthread -lm -lrt -lasound)
+

@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2019-12-31 15:21:52
- * @LastEditTime : 2020-01-02 16:11:05
+ * @LastEditTime : 2020-01-03 01:32:23
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/README.md
@@ -38,6 +38,15 @@ vtk 5
 pcl 1.7
 opencv 3.4
 Eigen
+
+### 5 安装语音功能
+- step1 在科大讯飞注册账户，修改appid
+- step2 安装相关库
+```
+sudo apt-get install libasound2-dev #asound库
+sudo apt-get install mplayer #mplayer工具
+```
+- step3 在科大讯飞官网下载SDK，在fileroot/libs/x64中将libmsc.so文件复制到/usr/local/lib中
 
 ### 4 开始编译
 ```
