@@ -53,7 +53,7 @@ pcl::PointCloud< PointCloudMapping::PointT >::Ptr PointCloudMapping::generatePoi
         for ( int n=0; n<depth.cols; n+=3 )  // 列  x
         {
             float d = depth.ptr<float>(m)[n];// 对应深度图处的 深度值
-            if (d < 0.01 || d>10)            // 跳过合理范围外的深度值
+            if (d < 0.01 || d>5)            // 跳过合理范围外的深度值
                 continue;
             PointT p;
             p.z = d;  // z坐标 

@@ -137,7 +137,7 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     mpTracker = new Tracking(this, mpVocabulary, mpFrameDrawer, mpMapDrawer,
               mpMap, mpKeyFrameDatabase, strSettingsFile, mSensor,
                       mpRunDetect);
-
+ 
 
     
 // 6. 初始化 局部地图构建 线程 并启动  Initialize the Local Mapping thread and launch
@@ -404,7 +404,7 @@ void System::Shutdown()
 {
     if(mpLocalMapper) mpLocalMapper->RequestFinish();  // 完成 并关闭建图线程
     if(mpLoopCloser) mpLoopCloser->RequestFinish();   // 完成 并关闭闭环检测线程
-    // if(mpPointCloudMapping) mpPointCloudMapping->shutdown(); // 关闭点云建图=======add
+    if(mpPointCloudMapping) mpPointCloudMapping->shutdown(); // 关闭点云建图=======add
     if(mpViewer!= NULL)//解释 可视化线程
     {
         mpViewer->RequestFinish();

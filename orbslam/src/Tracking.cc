@@ -2597,7 +2597,8 @@ void Tracking::CreateNewKeyFrame()
 
 
     // 为点云建图线程，加入关键帧 和 对应的 彩色图 和 深度图 insert Key Frame into point cloud viewer================================
-    //  mpPointCloudMapping->insertKeyFrame( pKF, this->mImGray, this->mImDepth );
+    if(mpPointCloudMapping) 
+        mpPointCloudMapping->insertKeyFrame( pKF, this->mImRGB, this->mImDepth );
 
     // 放在这里不太好，地图中进行融合时 有时候会把 关键帧删除。。。。
     if(mpRunDetect)

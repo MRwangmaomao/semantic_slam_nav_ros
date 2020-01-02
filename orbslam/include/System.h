@@ -183,7 +183,7 @@ private:
 	std::thread* mptLocalMapping;// 建图线程         指针
 	std::thread* mptLoopClosing;  // 闭环检测线程  指针
 	std::thread* mptViewer;	     // 可视化线程      指针
-
+	std::thread* mptPointCloudMapping; // 可视化PCL点云线程
 	// Reset flag 线程重启标志 ===========================================
 	std::mutex mMutexReset;// 互斥量   保护 mbReset 变量
 	bool mbReset;
