@@ -1,7 +1,7 @@
 /*
  * @Author: 王培荣
  * @Date: 2019-12-29 10:10:42
- * @LastEditTime : 2019-12-31 14:32:05
+ * @LastEditTime : 2020-01-02 22:57:34
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/orbslam/src/Detector.cc
@@ -87,10 +87,7 @@ void Detector::Run(const cv::Mat& bgr_img, std::vector<Object>& objects)
         cv::rectangle(im, rec, cv::Scalar(255,0,0));
         objects.push_back(object);
     }
-//    Show(bgr_img,objects);
-//    cv::namedWindow("segimg");
-//    cv::imshow("segimg",im);
-//    cv::waitKey(1);
+ 
 }
 
 cv::Mat Detector::Show(const cv::Mat& bgr_img, std::vector<Object>& objects)
@@ -126,12 +123,9 @@ cv::Mat Detector::Show(const cv::Mat& bgr_img, std::vector<Object>& objects)
         cv::putText(image, text, cv::Point(x, y + label_size.height),
                     cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 0));
     }
-    imwrite("result.jpg", image);
-    cv::imshow("image", image);
-    cv::waitKey(0); // 等待按键，窗口不会立即退出
+ 
     return image;
-    //
-
+ 
 }
 
 

@@ -126,7 +126,7 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     // float resolution = fsSettings["PointCloudMapping.Resolution"];
     // mpPointCloudMapping = make_shared<PointCloudMapping>( resolution ); 
     mpRunDetect = make_shared<RunDetect>();// 目标检测 智能指针对象====
- 
+    mpRunDetect->readParameter(strSettingsFile);
 // 5. 初始化 跟踪线程 对象 未启动  Initialize the Tracking thread (it will live in the main thread of execution, the one that called this constructor)
     //mpTracker = new Tracking(this, mpVocabulary, mpFrameDrawer, mpMapDrawer,
     //		      mpMap, mpKeyFrameDatabase, strSettingsFile, mSensor);
@@ -137,7 +137,7 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     mpTracker = new Tracking(this, mpVocabulary, mpFrameDrawer, mpMapDrawer,
               mpMap, mpKeyFrameDatabase, strSettingsFile, mSensor,
                       mpRunDetect);
- 
+    
 
     
 // 6. 初始化 局部地图构建 线程 并启动  Initialize the Local Mapping thread and launch
@@ -155,7 +155,7 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     if(bUseViewer)
     {
         mpViewer = new Viewer(this, mpFrameDrawer,mpMapDrawer,mpTracker,strSettingsFile, mFolderPath);
-        mptViewer = new thread(&Viewer::Run, mpViewer);
+        mptViewer = new thread(&Viewer::Run, mpViewer); 
         mpTracker->SetViewer(mpViewer);
     }
     

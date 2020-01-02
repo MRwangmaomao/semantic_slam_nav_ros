@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-01-02 15:22:49
- * @LastEditTime : 2020-01-02 17:42:08
+ * @LastEditTime : 2020-01-02 23:23:48
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/orbslam/include/Viewer.h
@@ -20,7 +20,7 @@
 #include "MapDrawer.h"
 #include "Tracking.h"
 #include "System.h"
-
+#include "Detector.h"
 #include <mutex>
 
 namespace ORB_SLAM2
@@ -53,7 +53,7 @@ public:
     void Release();
 
     void SaveOctomap(const char *filename);
-
+ 
 private:
 
     bool Stop();
@@ -62,7 +62,7 @@ private:
     FrameDrawer* mpFrameDrawer;
     MapDrawer* mpMapDrawer;
     Tracking* mpTracker;
-
+    Detector * mpdetector;
     // 1/fps in ms
     double mT;
     float mImageWidth, mImageHeight;
@@ -84,6 +84,7 @@ private:
     int mShowobject;
     int mShowPoints;
     int mShowAllPointcloud;
+    int mDisplayDetect;
 };
 
 }

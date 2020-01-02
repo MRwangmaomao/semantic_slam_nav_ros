@@ -23,13 +23,15 @@ Viewer::Viewer(System* pSystem,
                mpSystem(pSystem), mpFrameDrawer(pFrameDrawer),
                mpMapDrawer(pMapDrawer), mpTracker(pTracking),
                mbFinishRequested(false), mbFinished(true), 
-               mbStopped(true), mbStopRequested(false), mFolderPath(folder_path)
+               mbStopped(true), mbStopRequested(false), mFolderPath(folder_path) 
 {
     cv::FileStorage fSettings(strSettingPath, cv::FileStorage::READ);
 
     float fps = fSettings["Camera.fps"];// 帧率
     if(fps<1)
         fps=30;
+
+   
 
 // ms 帧率倒数
     mT = 1e3/fps; 
@@ -53,7 +55,7 @@ Viewer::Viewer(System* pSystem,
     mShowobject = fSettings["Viewer.Showobject"];
     mShowPoints = fSettings["Viewer.ShowPoints"];
     mShowAllPointcloud = fSettings["Viewer.ShowAllPointcloud"];
-
+    mDisplayDetect = fSettings["DisplayDetect"];
 
     /*
         Viewer.ViewpointY: -0.7
@@ -85,7 +87,7 @@ void Viewer::Run()
     // 在绘制红色玻璃的时候，利用“混合”功能，把将要绘制上去的红色和原来的绿色进行混合，
     // 于是得到一种新的颜色，看上去就好像玻璃是半透明的。
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);// 颜色混合
-
+ 
 // 3. 窗口菜单设置=============
     pangolin::CreatePanel("menu").SetBounds(0.0,1.0,0.0,pangolin::Attach::Pix(175));
 // 3.1 菜单栏====
@@ -111,6 +113,7 @@ void Viewer::Run()
 
     pangolin::Var<bool> menuLoad("menu.Load", false, false);// Load Octomap 按钮==变量===
 
+ 
     // Define Camera Render Object (for view / scene browsing)
 // 3.2 窗口视角  ========
     pangolin::OpenGlRenderState s_cam(
@@ -128,15 +131,19 @@ void Viewer::Run()
 
 
 // 3.3 OPENCV 显示 当前帧==============================
-    cv::namedWindow("当前帧+关键点");
-    cv::namedWindow("2D 边框");
-
+    if(!mDisplayDetect){
+        cv::namedWindow("当前帧+关键点");
+    }
+    
+  
     bool bFollow = true;
     bool bLocalizationMode = false;
 
 // 4. Viewer 线程
     while(1)
     {
+
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         mpMapDrawer->GetCurrentOpenGLCameraMatrix(Twc);// 当前帧 位姿 OpenGL Matrix
@@ -199,15 +206,17 @@ void Viewer::Run()
         } 
         if(menuShowObject) { 
             mpMapDrawer->DrawOctoMap();// 显示 octomap
-            mpMapDrawer->DrawObject();// 绘制目标物体 3D边框
+            mpMapDrawer->DrawObject();// 绘制目标物体 3D边框 
         }
              
         pangolin::FinishFrame(); // 胖果林完成显示=================
 
+        
         cv::Mat im = mpFrameDrawer->DrawFrame(); // 返回关键帧，带有 关键点========
-        cv::imshow("当前帧+关键点",im);
-        cv::waitKey(mT);
-
+        if(!mDisplayDetect){
+            cv::imshow("当前帧+关键点", im);
+            cv::waitKey(mT);  
+        }
         if(menuReset) // 重置====
         {
             menuShowGraph = true;
@@ -224,10 +233,11 @@ void Viewer::Run()
         }
         if(menuSave) // 保存 地图==============
         {
-           mpSystem->SaveMap("map.bin"); // orb-slam2 保存系统地图，便于重启后载入地图，重定位
-           mpMapDrawer->SaveOctoMap("octomap.ot");// 保存octomap地图
-           menuSave = false;
-           cout<<"save done!"<<endl;
+            
+            mpSystem->SaveMap("map.bin"); // orb-slam2 保存系统地图，便于重启后载入地图，重定位
+            mpMapDrawer->SaveOctoMap("octomap.ot");// 保存octomap地图
+            menuSave = false;
+            cout<<"save done!"<<endl;
         }
 
         if(menuLoad)
@@ -323,3 +333,4 @@ void Viewer::SaveOctomap(const char *filename)
 }
 
 }
+ 

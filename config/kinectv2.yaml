@@ -71,6 +71,8 @@ Viewer.ShowOctotreeMap: 0
 Viewer.Showobject: 0
 Viewer.ShowPoints: 1
 Viewer.ShowAllPointcloud: 0
+
+DisplayDetect: 1
 #--------------------------------------------------------------------------------------------
 # PointCloudMapping Parameters
 #--------------------------------------------------------------------------------------------

@@ -69,9 +69,11 @@ Viewer.ViewpointZ: -1.8
 Viewer.ViewpointF: 500
 
 Viewer.ShowOctotreeMap: 0
-Viewer.Showobject: 0
-Viewer.ShowPoints: 1
+Viewer.Showobject: 1
+Viewer.ShowPoints: 0
 Viewer.ShowAllPointcloud: 0
+
+DisplayDetect: 0
 #--------------------------------------------------------------------------------------------
 # PointCloudMapping Parameters
 #--------------------------------------------------------------------------------------------

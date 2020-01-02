@@ -1,7 +1,7 @@
 /*
  * @Author: 王培荣
  * @Date: 2019-12-29 10:10:42
- * @LastEditTime : 2020-01-01 05:11:27
+ * @LastEditTime : 2020-01-02 23:33:59
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/orbslam/src/RunDetect.cc
@@ -31,14 +31,22 @@ void RunDetect::insertKFColorImg(KeyFrame* kf, cv::Mat color)
     // cout<<"receive a keyframe, id = "<<kf->mnId<<endl;
     unique_lock<mutex> lck(colorImgMutex); // 对关键帧上锁
     colorImgs.push_back( color.clone() );  // 图像数组  加入一个 图像  深拷贝
-    mvKeyframes.push_back(kf);
-
+    mvKeyframes.push_back(kf); 
     colorImgUpdated.notify_one();         
     // 数据更新线程 解除一个阻塞的，来对彩色图像进行 目标检测===
 }
 
+void RunDetect::readParameter(std::string filePath){
+    cv::FileStorage fSettings(filePath, cv::FileStorage::READ);
+    mDisplayDetect = fSettings["DisplayDetect"];
+}
+
 void RunDetect::Run(void)
 {
+    if(mDisplayDetect){
+        cv::namedWindow("2D Detect");
+    }
+    
     while(1)
     {
         {
@@ -55,18 +63,22 @@ void RunDetect::Run(void)
         for ( size_t i=lastKeyframeSize; i<N ; i++ )// 接着上次处理的地方开始
         {
            std::vector<Object> vobject;
-           mDetector->Run(colorImgs[i], vobject);
+           mDetector->Run(colorImgs[i], vobject); 
            if(vobject.size()>0)
            {
+            //    mDetector->Show(mvKeyframes[i]->mImRGB,vobject);
+                if(mDisplayDetect){
+                    cv::imshow("2D Detect", mDetector->Show(mvKeyframes[i]->mImRGB,vobject));
+                    cvWaitKey(30);
+                } 
             //    std::cout << "detect : " << vobject.size() << " uums obj" << std::endl;
-               for(unsigned int j =0; j<vobject.size(); j++)
-               {
-                   unique_lock<mutex> lckObj(mvKeyframesMutex); // 2d检测结果上锁
-                   mvKeyframes[i]->mvObject.push_back(vobject[j]);// 存入目标检测结果库====
-               }
+                for(unsigned int j =0; j<vobject.size(); j++)
+                {
+                    unique_lock<mutex> lckObj(mvKeyframesMutex); // 2d检测结果上锁
+                    mvKeyframes[i]->mvObject.push_back(vobject[j]);// 存入目标检测结果库==== 
+                }
            }
-        }
-
+        } 
         lastKeyframeSize = N;
     }
     

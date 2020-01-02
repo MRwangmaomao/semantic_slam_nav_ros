@@ -1,7 +1,7 @@
 /*
  * @Author: 王培荣
  * @Date: 2019-12-29 10:10:42
- * @LastEditTime : 2019-12-31 17:22:31
+ * @LastEditTime : 2020-01-02 23:31:20
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/orbslam/include/RunDetect.h
@@ -29,10 +29,11 @@ class RunDetect
 
 public:
     void insertKFColorImg(KeyFrame* kf, cv::Mat color);// 插入一个关键帧的彩色图像，检测过后可以删除===
+    void readParameter(std::string filePath);
     void Run(void);// 线程运行函数====
     RunDetect();
     ~RunDetect();
-
+    Detector* mDetector;// 目标检测对象====
 protected:
     std::shared_ptr<thread>  mRunThread; // 执行线程==
 
@@ -48,8 +49,8 @@ protected:
     //std::vector<std::vector<Object>> mvvObjects;// 保持每张关键帧图像的 2d检测结果==== 
     //mutex  mvvObjectsMutex;
 
-
+    int mDisplayDetect = 0;
     uint16_t          lastKeyframeSize =0;
-    Detector* mDetector;// 目标检测对象====
+    
 };
 #endif
