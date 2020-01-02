@@ -1,6 +1,5 @@
 lib/*
 Vocabulary/*
-Vocabulary/ORBvoc.txt
 build/*
 
 data/map.bin
