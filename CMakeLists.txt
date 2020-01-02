@@ -98,6 +98,7 @@ std_msgs
 #包含库文件
 include_directories(
 ${catkin_INCLUDE_DIRS}
+${PROJECT_SOURCE_DIR}/speech
 ${PROJECT_SOURCE_DIR}
 ${PROJECT_SOURCE_DIR}/include
 ${PROJECT_SOURCE_DIR}/orbslam/include
@@ -195,6 +196,6 @@ ${PCL_LIBRARIES}
 add_executable(tts_subscribe src/tts_subscribe.cpp)
 target_link_libraries(tts_subscribe ${catkin_LIBRARIES} libmsc.so -ldl -lpthread)
 
-add_executable(iat_publish src/iat_publish.cpp src/speech_recognizer.c src/linuxrec.c)
+add_executable(iat_publish src/iat_publish.cpp speech/src/speech_recognizer.c speech/src/linuxrec.c)
 target_link_libraries(iat_publish ${catkin_LIBRARIES} libmsc.so -ldl -lpthread -lm -lrt -lasound)
 
