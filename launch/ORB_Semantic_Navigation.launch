@@ -1,0 +1,11 @@
+<launch>
+  
+<!--  strt lidar rgbd camera process--> 
+  <param name="use_sim_time" value="true"/>
+ 
+  <node pkg="orbslam_semantic_nav_ros" type="kinect_camera_node"  name="kinect_camera_node" 
+    args="/home/wpr/code/catkin_ws/src/orbslam_semantic_nav_ros/config/setting_file.yaml " 
+    clear_params="true" output="screen" > 
+    
+  </node>
+</launch>
