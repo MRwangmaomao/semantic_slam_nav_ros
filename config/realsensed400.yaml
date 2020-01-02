@@ -60,7 +60,7 @@ ORBextractor.minThFAST: 7
 Viewer.KeyFrameSize: 0.05
 Viewer.KeyFrameLineWidth: 1
 Viewer.GraphLineWidth: 0.9
-Viewer.PointSize:2
+Viewer.PointSize: 2
 Viewer.CameraSize: 0.08
 Viewer.CameraLineWidth: 3
 Viewer.ViewpointX: 0
@@ -68,6 +68,10 @@ Viewer.ViewpointY: -0.7
 Viewer.ViewpointZ: -1.8
 Viewer.ViewpointF: 500
 
+Viewer.ShowOctotreeMap: 0
+Viewer.Showobject: 0
+Viewer.ShowPoints: 1
+Viewer.ShowAllPointcloud: 0
 #--------------------------------------------------------------------------------------------
 # PointCloudMapping Parameters
 #--------------------------------------------------------------------------------------------

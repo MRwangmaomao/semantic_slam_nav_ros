@@ -23,7 +23,8 @@ MapDrawer::MapDrawer(Map* pMap, const string &strSettingPath):
       m_res(0.05),
       m_colorFactor(0.8),
       m_treeDepth(0),
-      m_maxTreeDepth(0)     
+      m_maxTreeDepth(0),
+      m_ShowOctotreeMap(1)     
 {
     cv::FileStorage fSettings(strSettingPath, cv::FileStorage::READ);
 
@@ -34,6 +35,7 @@ MapDrawer::MapDrawer(Map* pMap, const string &strSettingPath):
     mCameraSize = fSettings["Viewer.CameraSize"];// 当前帧 相机线长
     mCameraLineWidth = fSettings["Viewer.CameraLineWidth"];// 当前帧 相机线宽
     m_res            = fSettings["octoMap.res"];// octomap图精度
+    m_ShowOctotreeMap = fSettings["Viewer.ShowOctotreeMap"];// octomap图精度 
 
 	/*
 	Viewer.KeyFrameSize: 0.05
@@ -395,152 +397,7 @@ void MapDrawer::DrawOctoMap()
     UpdateOctomap(vKFs);
 
     // 带有颜色的 octomap=====
-//     octomap::ColorOcTree::tree_iterator it  = m_octree->begin_tree();
-//     octomap::ColorOcTree::tree_iterator end = m_octree->end_tree();
-//     int counter = 0;// 计数
-//     double occ_thresh = 0.8; // 概率阈值 原来 0.9  越大，显示的octomap格子越少
-//     int level = 16; // 八叉树地图 深度???
-//     glClearColor(1.0f,1.0f,1.0f,1.0f);// 颜色 + 透明度
 
-//     glDisable(GL_LIGHTING);
-//     glEnable (GL_BLEND);
-
-//     ////DRAW OCTOMAP BEGIN//////
-//     // double stretch_factor = 128/(1 - occ_thresh); //1280.0
-// // occupancy range in which the displayed cubes can be
-
-//     for(; it != end; ++counter, ++it)
-//     {
-//         if(level != it.getDepth())
-//         {
-//             continue;
-//         }
-//         double occ = it->getOccupancy();//占有概率=================
-//         if(occ < occ_thresh) // 占有概率较低====不显示
-//         {
-//             continue;
-//         }
-
-//         // std::cout<< occ << std::endl;
-
-//         double minX, minY, minZ, maxX, maxY, maxZ;
-//         m_octree->getMetricMin(minX, minY, minZ);
-//         m_octree->getMetricMax(maxX, maxY, maxZ);
-
-//        float halfsize = it.getSize()/2.0;// 半尺寸
-//        float x = it.getX();
-//        float y = it.getY();
-//        float z = it.getZ();
-
-// // 高度====
-//        double h = ( std::min(std::max((y-minY)/(maxY-minY), 0.0), 1.0))*0.8;
-// // 按高度 计算颜色
-//        double r, g, b;
-//        heightMapColor(h, r,g,b);
-
-//        glBegin(GL_TRIANGLES); // 三角形??
-//        //Front
-//        glColor3d(r, g, b);// 显示颜色=====
-//        glVertex3f(x-halfsize,y-halfsize,z-halfsize);// - - - 1
-//        glVertex3f(x-halfsize,y+halfsize,z-halfsize);// - + - 2
-//        glVertex3f(x+halfsize,y+halfsize,z-halfsize);// + + -3
-
-//        glVertex3f(x-halfsize,y-halfsize,z-halfsize); // - - -
-//        glVertex3f(x+halfsize,y+halfsize,z-halfsize); // + + -
-//        glVertex3f(x+halfsize,y-halfsize,z-halfsize); // + - -4
-
-//        //Back
-//        glVertex3f(x-halfsize,y-halfsize,z+halfsize); // - - + 1
-//        glVertex3f(x+halfsize,y-halfsize,z+halfsize); // + - + 2
-//        glVertex3f(x+halfsize,y+halfsize,z+halfsize); // + + + 3
-
-//        glVertex3f(x-halfsize,y-halfsize,z+halfsize); // - - +
-//        glVertex3f(x+halfsize,y+halfsize,z+halfsize); // + + +
-//        glVertex3f(x-halfsize,y+halfsize,z+halfsize); // - + + 4
-
-//        //Left
-//        glVertex3f(x-halfsize,y-halfsize,z-halfsize); // - - - 1
-//        glVertex3f(x-halfsize,y-halfsize,z+halfsize); // - - + 2
-//        glVertex3f(x-halfsize,y+halfsize,z+halfsize); // - + + 3
-
-//        glVertex3f(x-halfsize,y-halfsize,z-halfsize); // - - -
-//        glVertex3f(x-halfsize,y+halfsize,z+halfsize); // - + +
-//        glVertex3f(x-halfsize,y+halfsize,z-halfsize); // - + - 4
-
-//        //Right
-//        glVertex3f(x+halfsize,y-halfsize,z-halfsize);
-//        glVertex3f(x+halfsize,y+halfsize,z-halfsize);
-//        glVertex3f(x+halfsize,y+halfsize,z+halfsize);
-
-//        glVertex3f(x+halfsize,y-halfsize,z-halfsize);
-//        glVertex3f(x+halfsize,y+halfsize,z+halfsize);
-//        glVertex3f(x+halfsize,y-halfsize,z+halfsize);
-
-//        //top
-//        glVertex3f(x-halfsize,y-halfsize,z-halfsize);
-//        glVertex3f(x+halfsize,y-halfsize,z-halfsize);
-//        glVertex3f(x+halfsize,y-halfsize,z+halfsize);
-
-//        glVertex3f(x-halfsize,y-halfsize,z-halfsize);
-//        glVertex3f(x+halfsize,y-halfsize,z+halfsize);
-//        glVertex3f(x-halfsize,y-halfsize,z+halfsize);
-
-//        //bottom
-//        glVertex3f(x-halfsize,y+halfsize,z-halfsize);
-//        glVertex3f(x-halfsize,y+halfsize,z+halfsize);
-//        glVertex3f(x+halfsize,y+halfsize,z+halfsize);
-
-//        glVertex3f(x-halfsize,y+halfsize,z-halfsize);
-//        glVertex3f(x+halfsize,y+halfsize,z+halfsize);
-//        glVertex3f(x+halfsize,y+halfsize,z-halfsize);
-//        glEnd();
-
-//        glBegin(GL_LINES); // 线段=======
-//        glColor3f(0,0,0);
-//        //
-//        glVertex3f(x-halfsize,y-halfsize,z-halfsize);// - - - 1
-//        glVertex3f(x-halfsize,y+halfsize,z-halfsize);
-
-//        glVertex3f(x-halfsize,y+halfsize,z-halfsize);// - + - 2
-//        glVertex3f(x+halfsize,y+halfsize,z-halfsize);// + + -3
-
-//        glVertex3f(x+halfsize,y+halfsize,z-halfsize);// + + -3
-//        glVertex3f(x+halfsize,y-halfsize,z-halfsize); // + - -4
-
-//        glVertex3f(x+halfsize,y-halfsize,z-halfsize); // + - -4
-//        glVertex3f(x-halfsize,y-halfsize,z-halfsize);// - - - 1
-
-
-//        // back
-
-//        glVertex3f(x-halfsize,y-halfsize,z+halfsize); // - - + 1
-//        glVertex3f(x+halfsize,y-halfsize,z+halfsize); // + - + 2
-
-//        glVertex3f(x+halfsize,y-halfsize,z+halfsize); // + - + 2
-//        glVertex3f(x+halfsize,y+halfsize,z+halfsize); // + + + 3
-
-//        glVertex3f(x+halfsize,y+halfsize,z+halfsize); // + + + 3
-//        glVertex3f(x-halfsize,y+halfsize,z+halfsize); // - + + 4
-
-//        glVertex3f(x-halfsize,y+halfsize,z+halfsize); // - + + 4
-//        glVertex3f(x-halfsize,y-halfsize,z+halfsize); // - - + 1
-
-//        // top
-//        glVertex3f(x+halfsize,y-halfsize,z-halfsize);
-//        glVertex3f(x+halfsize,y-halfsize,z+halfsize);
-
-//        glVertex3f(x-halfsize,y-halfsize,z+halfsize);
-//        glVertex3f(x-halfsize,y-halfsize,z-halfsize);
-
-//         // bottom
-
-//        glVertex3f(x-halfsize,y+halfsize,z+halfsize);
-//        glVertex3f(x+halfsize,y+halfsize,z+halfsize);
-
-//        glVertex3f(x-halfsize,y+halfsize,z-halfsize);
-//        glVertex3f(x+halfsize,y+halfsize,z-halfsize);
-//        glEnd();
-//     }
 }
 
 
@@ -633,13 +490,163 @@ void MapDrawer::UpdateOctomap(vector<KeyFrame*> vKFs)
               GeneratePointCloud( vKFs[i], ground, nonground, vKFs[i]->mvObject);// 生成点云
           else 
               GeneratePointCloud( vKFs[i], ground, nonground);// 生成点云
-
-         octomap::point3d sensorOrigin = 
+        if(m_ShowOctotreeMap){
+            octomap::point3d sensorOrigin = 
                 octomap::point3d( pose(0,3), pose(1,3), pose(2,3));// 点云原点
 
-         InsertScan(sensorOrigin, ground, nonground);// 将新点云 插入到 octomap地图中====
+            InsertScan(sensorOrigin, ground, nonground);// 将新点云 插入到 octomap地图中====
+        }
     }
     lastKeyframeSize = N-1;// 更新已经 处理的 关键帧数
+  }
+
+  if(m_ShowOctotreeMap){
+    octomap::ColorOcTree::tree_iterator it  = m_octree->begin_tree();
+    octomap::ColorOcTree::tree_iterator end = m_octree->end_tree();
+    int counter = 0;// 计数
+    double occ_thresh = 0.8; // 概率阈值 原来 0.9  越大，显示的octomap格子越少
+    int level = 16; // 八叉树地图 深度???
+    glClearColor(1.0f,1.0f,1.0f,1.0f);// 颜色 + 透明度
+
+    glDisable(GL_LIGHTING);
+    glEnable (GL_BLEND);
+
+    ////DRAW OCTOMAP BEGIN//////
+    // double stretch_factor = 128/(1 - occ_thresh); //1280.0
+    // occupancy range in which the displayed cubes can be
+
+    for(; it != end; ++counter, ++it)
+    {
+        if(level != it.getDepth())
+        {
+            continue;
+        }
+        double occ = it->getOccupancy();//占有概率=================
+        if(occ < occ_thresh) // 占有概率较低====不显示
+        {
+            continue;
+        }
+
+        // std::cout<< occ << std::endl;
+
+        double minX, minY, minZ, maxX, maxY, maxZ;
+        m_octree->getMetricMin(minX, minY, minZ);
+        m_octree->getMetricMax(maxX, maxY, maxZ);
+
+       float halfsize = it.getSize()/2.0;// 半尺寸
+       float x = it.getX();
+       float y = it.getY();
+       float z = it.getZ();
+
+// 高度====
+       double h = ( std::min(std::max((y-minY)/(maxY-minY), 0.0), 1.0))*0.8;
+// 按高度 计算颜色
+       double r, g, b;
+       heightMapColor(h, r,g,b);
+
+       glBegin(GL_TRIANGLES); // 三角形??
+       //Front
+       glColor3d(r, g, b);// 显示颜色=====
+       glVertex3f(x-halfsize,y-halfsize,z-halfsize);// - - - 1
+       glVertex3f(x-halfsize,y+halfsize,z-halfsize);// - + - 2
+       glVertex3f(x+halfsize,y+halfsize,z-halfsize);// + + -3
+
+       glVertex3f(x-halfsize,y-halfsize,z-halfsize); // - - -
+       glVertex3f(x+halfsize,y+halfsize,z-halfsize); // + + -
+       glVertex3f(x+halfsize,y-halfsize,z-halfsize); // + - -4
+
+       //Back
+       glVertex3f(x-halfsize,y-halfsize,z+halfsize); // - - + 1
+       glVertex3f(x+halfsize,y-halfsize,z+halfsize); // + - + 2
+       glVertex3f(x+halfsize,y+halfsize,z+halfsize); // + + + 3
+
+       glVertex3f(x-halfsize,y-halfsize,z+halfsize); // - - +
+       glVertex3f(x+halfsize,y+halfsize,z+halfsize); // + + +
+       glVertex3f(x-halfsize,y+halfsize,z+halfsize); // - + + 4
+
+       //Left
+       glVertex3f(x-halfsize,y-halfsize,z-halfsize); // - - - 1
+       glVertex3f(x-halfsize,y-halfsize,z+halfsize); // - - + 2
+       glVertex3f(x-halfsize,y+halfsize,z+halfsize); // - + + 3
+
+       glVertex3f(x-halfsize,y-halfsize,z-halfsize); // - - -
+       glVertex3f(x-halfsize,y+halfsize,z+halfsize); // - + +
+       glVertex3f(x-halfsize,y+halfsize,z-halfsize); // - + - 4
+
+       //Right
+       glVertex3f(x+halfsize,y-halfsize,z-halfsize);
+       glVertex3f(x+halfsize,y+halfsize,z-halfsize);
+       glVertex3f(x+halfsize,y+halfsize,z+halfsize);
+
+       glVertex3f(x+halfsize,y-halfsize,z-halfsize);
+       glVertex3f(x+halfsize,y+halfsize,z+halfsize);
+       glVertex3f(x+halfsize,y-halfsize,z+halfsize);
+
+       //top
+       glVertex3f(x-halfsize,y-halfsize,z-halfsize);
+       glVertex3f(x+halfsize,y-halfsize,z-halfsize);
+       glVertex3f(x+halfsize,y-halfsize,z+halfsize);
+
+       glVertex3f(x-halfsize,y-halfsize,z-halfsize);
+       glVertex3f(x+halfsize,y-halfsize,z+halfsize);
+       glVertex3f(x-halfsize,y-halfsize,z+halfsize);
+
+       //bottom
+       glVertex3f(x-halfsize,y+halfsize,z-halfsize);
+       glVertex3f(x-halfsize,y+halfsize,z+halfsize);
+       glVertex3f(x+halfsize,y+halfsize,z+halfsize);
+
+       glVertex3f(x-halfsize,y+halfsize,z-halfsize);
+       glVertex3f(x+halfsize,y+halfsize,z+halfsize);
+       glVertex3f(x+halfsize,y+halfsize,z-halfsize);
+       glEnd();
+
+       glBegin(GL_LINES); // 线段=======
+       glColor3f(0,0,0);
+       //
+       glVertex3f(x-halfsize,y-halfsize,z-halfsize);// - - - 1
+       glVertex3f(x-halfsize,y+halfsize,z-halfsize);
+
+       glVertex3f(x-halfsize,y+halfsize,z-halfsize);// - + - 2
+       glVertex3f(x+halfsize,y+halfsize,z-halfsize);// + + -3
+
+       glVertex3f(x+halfsize,y+halfsize,z-halfsize);// + + -3
+       glVertex3f(x+halfsize,y-halfsize,z-halfsize); // + - -4
+
+       glVertex3f(x+halfsize,y-halfsize,z-halfsize); // + - -4
+       glVertex3f(x-halfsize,y-halfsize,z-halfsize);// - - - 1
+
+
+       // back
+
+       glVertex3f(x-halfsize,y-halfsize,z+halfsize); // - - + 1
+       glVertex3f(x+halfsize,y-halfsize,z+halfsize); // + - + 2
+
+       glVertex3f(x+halfsize,y-halfsize,z+halfsize); // + - + 2
+       glVertex3f(x+halfsize,y+halfsize,z+halfsize); // + + + 3
+
+       glVertex3f(x+halfsize,y+halfsize,z+halfsize); // + + + 3
+       glVertex3f(x-halfsize,y+halfsize,z+halfsize); // - + + 4
+
+       glVertex3f(x-halfsize,y+halfsize,z+halfsize); // - + + 4
+       glVertex3f(x-halfsize,y-halfsize,z+halfsize); // - - + 1
+
+       // top
+       glVertex3f(x+halfsize,y-halfsize,z-halfsize);
+       glVertex3f(x+halfsize,y-halfsize,z+halfsize);
+
+       glVertex3f(x-halfsize,y-halfsize,z+halfsize);
+       glVertex3f(x-halfsize,y-halfsize,z-halfsize);
+
+        // bottom
+
+       glVertex3f(x-halfsize,y+halfsize,z+halfsize);
+       glVertex3f(x+halfsize,y+halfsize,z+halfsize);
+
+       glVertex3f(x-halfsize,y+halfsize,z-halfsize);
+       glVertex3f(x+halfsize,y+halfsize,z-halfsize);
+       glEnd();
+    }
   }
 }
 
@@ -786,7 +793,7 @@ void MapDrawer::GeneratePointCloud(KeyFrame *kf,
 void MapDrawer::GeneratePointCloud(KeyFrame *kf, 
                                    pcl::PointCloud<pcl::PointXYZRGB> &ground, 
                                    pcl::PointCloud<pcl::PointXYZRGB> &nonground,
-                                   std::vector<Object>& objects)// 传入2d检测结果
+                                   std::vector<Object>& objects)    // 传入2d检测结果
 {
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
     cloud->resize(kf->mImDep.rows * kf->mImDep.cols);

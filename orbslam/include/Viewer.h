@@ -1,3 +1,11 @@
+/*
+ * @Author: your name
+ * @Date: 2020-01-02 15:22:49
+ * @LastEditTime : 2020-01-02 17:42:08
+ * @LastEditors  : Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/orbslam/include/Viewer.h
+ */
  
 /**
 * This file is part of ORB-SLAM2.
@@ -71,6 +79,11 @@ private:
     bool mbStopRequested;
     std::mutex mMutexStop;
     std::string mFolderPath;
+
+    int mShowOctotreeMap;
+    int mShowobject;
+    int mShowPoints;
+    int mShowAllPointcloud;
 };
 
 }

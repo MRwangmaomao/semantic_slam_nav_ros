@@ -91,8 +91,9 @@ public:
     void LoadOctoMap(std::string folder_path);
 // 融合2d和点云信息 到3d目标数据库 
 // Merge2d3d* mpMerge2d3d;  // 需要定义为指针否则 编译器报错
-   MergeSG* mpMerge2d3d;
-
+    MergeSG* mpMerge2d3d;
+    
+    int m_ShowOctotreeMap; // 不显示八叉树地图
 protected:
      // 生成当前帧的点云，简单滤波 并 分离地面 和 非地面
      void GeneratePointCloud(KeyFrame* kf, 

@@ -47,6 +47,14 @@ Viewer::Viewer(System* pSystem,
     mViewpointY = fSettings["Viewer.ViewpointY"];
     mViewpointZ = fSettings["Viewer.ViewpointZ"];
     mViewpointF = fSettings["Viewer.ViewpointF"];
+
+// 初始化要显示的内容 
+    mShowOctotreeMap = fSettings["Viewer.ShowOctotreeMap"];
+    mShowobject = fSettings["Viewer.Showobject"];
+    mShowPoints = fSettings["Viewer.ShowPoints"];
+    mShowAllPointcloud = fSettings["Viewer.ShowAllPointcloud"];
+
+
     /*
         Viewer.ViewpointY: -0.7
         Viewer.ViewpointZ: -1.8
@@ -82,7 +90,17 @@ void Viewer::Run()
     pangolin::CreatePanel("menu").SetBounds(0.0,1.0,0.0,pangolin::Attach::Pix(175));
 // 3.1 菜单栏====
     pangolin::Var<bool> menuFollowCamera("menu.Follow Camera",false,true);// 地图视角跟随相机动  默认不勾选
-    pangolin::Var<bool> menuShowPoints("menu.Show Points",false,true);// 显示地图点
+    pangolin::Var<bool> menuShowPoints("menu.Show Points",(bool)mShowPoints,true);// 显示地图点
+
+    pangolin::Var<bool> menuShowOctomap("menu.Show Octomap",(bool)mShowOctotreeMap,true);// 显示地图点
+    
+    pangolin::Var<bool> menuShowGenerateCurrentPC("menu.Show CurrentPC",false,true);// 显示当前帧点云
+
+    pangolin::Var<bool> menuShowObject("menu.Show Object",(bool)mShowobject,true);// 显示检测到的3D目标物体
+    
+    pangolin::Var<bool> menuShowAllPC("menu.Show AlltPC",(bool)mShowAllPointcloud,true);// 显示所有关键帧
+
+
     pangolin::Var<bool> menuShowKeyFrames("menu.Show KeyFrames",true,true);// 显示关键帧
     pangolin::Var<bool> menuShowGraph("menu.Show Graph",true,true);// 显示关键帧 连线
     pangolin::Var<bool> menuLocalizationMode("menu.Localization Mode",false,true);// 仅定位模式 默认不勾选
@@ -163,18 +181,27 @@ void Viewer::Run()
             mpMapDrawer->DrawKeyFrames(menuShowKeyFrames,menuShowGraph);// 绘制关键帧 及其之间的连线
 
         //========== 显示 ORB-SLAM2 地图点 / 稠密octo-map点 ========================
-        if(menuShowPoints)
+        if(menuShowPoints){
             mpMapDrawer->DrawMapPoints();// 显示  ORB-SLAM2  地图点
-        else
-        { // octomap 地图显示
-            mpMapDrawer->DrawOctoMap();// 显示 octomap 
-            mpFrameDrawer->generatePC();// 生成当前帧点云
-            mpMapDrawer->DrawObs(); // 绘制当前帧点云====
-            mpMapDrawer->DrawObject();// 绘制目标物体 3D边框
-    //            cv::Mat im2d = mpMapDrawer->DrawObject2D();// 绘制目标物体 2D边框
-    //            cv::imshow("2D 边框",im2d);
-    //            cv::waitKey(mT);
         }
+        // octomap 地图显示 
+        if(menuShowOctomap){ 
+            mpMapDrawer->m_ShowOctotreeMap = 1;
+        }
+        else
+        {
+            mpMapDrawer->m_ShowOctotreeMap = 0;
+        }
+        
+        if(menuShowGenerateCurrentPC){
+            mpFrameDrawer->generatePC(); // 生成当前帧点云
+            mpMapDrawer->DrawObs(); // 绘制当前帧点云====
+        } 
+        if(menuShowObject) { 
+            mpMapDrawer->DrawOctoMap();// 显示 octomap
+            mpMapDrawer->DrawObject();// 绘制目标物体 3D边框
+        }
+             
         pangolin::FinishFrame(); // 胖果林完成显示=================
 
         cv::Mat im = mpFrameDrawer->DrawFrame(); // 返回关键帧，带有 关键点========
