@@ -201,6 +201,9 @@ target_link_libraries(tts_subscribe ${catkin_LIBRARIES} libmsc.so -ldl -lpthread
 add_executable(iat_publish speech/src/iat_publish.cpp speech/src/speech_recognizer.c speech/src/linuxrec.c)
 target_link_libraries(iat_publish ${catkin_LIBRARIES} libmsc.so -ldl -lpthread -lm -lrt -lasound)
 
-add_executable(gesture_publish aip-cpp/src/gesture_publish.cpp)
-target_link_libraries(gesture_publish ${catkin_LIBRARIES} -lcurl -ljsoncpp -lcrypto)
+add_executable(gesture_pub_node aip-cpp/src/gesture_pub_node.cpp )
+target_link_libraries(gesture_pub_node ${catkin_LIBRARIES} ${OpenCV_LIBS} -lcurl -ljsoncpp -lcrypto)
+
+add_executable(face_pub_node aip-cpp/src/face_pub_node.cpp )
+target_link_libraries(face_pub_node ${catkin_LIBRARIES} ${OpenCV_LIBS} -lcurl -ljsoncpp -lcrypto)
 

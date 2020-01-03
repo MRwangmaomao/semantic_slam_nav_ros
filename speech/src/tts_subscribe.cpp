@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-01-03 00:42:22
- * @LastEditTime : 2020-01-03 02:05:28
+ * @LastEditTime : 2020-01-03 21:28:12
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/src/tts_subscrib.cpp
@@ -60,6 +60,7 @@ wave_pcm_hdr default_wav_hdr =
 	{'d', 'a', 't', 'a'},
 	0  
 };
+
 /* 文本合成 */
 int text_to_speech(const char* src_text, const char* des_path, const char* params)
 {
@@ -70,7 +71,7 @@ int text_to_speech(const char* src_text, const char* des_path, const char* param
 	wave_pcm_hdr wav_hdr      = default_wav_hdr;
 	int          synth_status = MSP_TTS_FLAG_STILL_HAVE_DATA;
 	std::string path = des_path;
-	path = "data/" + path;
+	// path = "data/" + path;
 	const char* wav_path = path.c_str();
 	if (NULL == src_text || NULL == wav_path)
 	{
@@ -101,7 +102,7 @@ int text_to_speech(const char* src_text, const char* des_path, const char* param
 	}
 	printf("正在合成 ...\n");
 	fwrite(&wav_hdr, sizeof(wav_hdr) ,1, fp); //添加wav音频头，使用采样率为16000
-	while (1) 
+	while (1)
 	{
 		/* 获取合成音频 */
 		const void* data = QTTSAudioGet(sessionID, &audio_len, &synth_status, &ret);
@@ -153,7 +154,7 @@ void voiceWordsCallback(const std_msgs::String::ConstPtr& msg)
     const char* text;
     int         ret                  = MSP_SUCCESS;
     const char* session_begin_params = "voice_name = xiaoyan, text_encoding = utf8, sample_rate = 16000, speed = 50, volume = 50, pitch = 50, rdn = 2";
-    const char* filename             = "tts_sample.wav"; //合成的语音文件名称
+    const char* filename             = "/home/wpr/code/catkin_ws/src/orbslam_semantic_nav_ros/data/tts_sample.wav"; //合成的语音文件名称
  
  
     std::cout<<"I heard :"<<msg->data.c_str()<<std::endl;
@@ -167,12 +168,12 @@ void voiceWordsCallback(const std_msgs::String::ConstPtr& msg)
         printf("text_to_speech failed, error code: %d.\n", ret);
     }
     printf("合成完毕\n");
-	system("mplayer data/tts_sample.wav");
+	system("mplayer /home/wpr/code/catkin_ws/src/orbslam_semantic_nav_ros/data/tts_sample.wav");
 }
  
 int main(int argc, char** argv){
     int ret = MSP_SUCCESS;
-    const char* login_params = "appid = 5e0e18ce, work_dir = /home/wpr/code/catkin_ws/src/orbslam_semantic_nav_ros/data/";//登录参数,appid与msc库绑定,请勿随意改动
+    const char* login_params = "appid = 5e0e18ce, work_dir =/home/wpr/code/catkin_ws/src/orbslam_semantic_nav_ros/data/";//登录参数,appid与msc库绑定,请勿随意改动
     /*
     * rdn:           合成音频数字发音方式
     * volume:        合成音频的音量

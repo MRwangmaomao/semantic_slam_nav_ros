@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2019-12-31 15:21:52
- * @LastEditTime : 2020-01-03 15:10:34
+ * @LastEditTime : 2020-01-03 17:22:52
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/README.md
@@ -52,6 +52,7 @@ sudo apt-get install mplayer #mplayer工具
 
 ### 5 安装aip相关库
 ```
+sudo apt-get install ros-kinetic-image-view
 sudo apt-get install libjsoncpp-dev
 sudo apt-get install openssl
 sudo apt-get install curl
