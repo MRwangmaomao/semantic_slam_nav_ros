@@ -13,7 +13,7 @@ map_file_name_param: "config/map.bin" #
 voc_file_name_param: "Vocabulary/ORBvoc.txt" 
 settings_file_name_param: "config/realsensed400.yaml" 
 load_map_param: 0 # 纯定位模式或者建图和定位模式
-publish_pointcloud_param: 1 # 发送相机位姿
+publish_pointcloud_param: 0 # 发送相机位姿
 publish_pose_param: 0 # 发送相机位姿
 min_observations_per_point: 2
 

@@ -76,7 +76,7 @@ Viewer.Showobject: 1
 Viewer.ShowPoints: 0
 Viewer.ShowAllPointcloud: 0
 
-DisplayDetect: 1
+DisplayDetect: 0
 #--------------------------------------------------------------------------------------------
 # PointCloudMapping Parameters
 #--------------------------------------------------------------------------------------------

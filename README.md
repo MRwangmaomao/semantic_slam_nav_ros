@@ -1,7 +1,7 @@
 <!--
  * @Author: 王培荣
  * @Date: 2019-12-31 15:21:52
- * @LastEditTime : 2020-01-04 01:29:44
+ * @LastEditTime : 2020-01-04 02:02:45
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/README.md
@@ -15,7 +15,7 @@
 ---
 
 演示2：
-[![Watch the video](image/merge_image3.png)](https://www.bilibili.com/video/av81398597)
+[![Watch the video](image/video_cover.png)](https://www.bilibili.com/video/av81398597)
 
 ---
 # 安装说明
@@ -80,13 +80,19 @@ catkin_make
 修改rospackage_path，设置为自己对应存储的路径。
 
 修改color_img_topic和depth_img_topic
- 
+
+# 动态环境的ORBSLAM
+![merge-map](image/dynamic_pic2.png)
 
 # 语义地图
+
 ```
 roslaunch slam_semantic_nav_ros ORB_Semantic_Navigation.launch
 ```
-![merge-map](image/merge_2d3d_map2.png)
+![merge-map](image/ssd_map1.png)
+
+![ssd_detect](image/ssd_detect.png)
+
 
 # 语音对话
 ```
