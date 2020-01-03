@@ -1,7 +1,7 @@
 /*
  * @Author: 王培荣
  * @Date: 2020-01-03 15:30:25
- * @LastEditTime : 2020-01-03 21:07:03
+ * @LastEditTime : 2020-01-03 22:15:29
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/aip-cpp/src/face_pub_node.cpp
@@ -25,8 +25,7 @@ aip::Face client("18166213", "HVV12BIfUj6IEegBfC9KrRZK", "azRZb0yDtaCdVtG1BF6zmY
 
 
 void img_callback(const sensor_msgs::ImageConstPtr &msgRGB)
-{  
-    
+{   
     try
     { 
         cv_bridge::CvImagePtr cv_image = cv_bridge::toCvCopy(msgRGB); 
@@ -53,7 +52,7 @@ void img_callback(const sensor_msgs::ImageConstPtr &msgRGB)
         return;
     }
 }
- 
+
 
 int main(int argc, char ** argv){
     ros::init(argc,argv,"face_pub");

@@ -1,0 +1,9 @@
+<launch>
+  
+<!--  strt lidar rgbd camera process-->   
+ <node pkg="slam_semantic_nav_ros" type="tts_subscribe" name="tts_subscribe"  clear_params="true" output="screen">
+ </node>
+  
+  <node pkg="slam_semantic_nav_ros" type="gesture_pub_node"  name="gesture_pub_node"  clear_params="true" output="screen" >
+  </node>
+</launch>

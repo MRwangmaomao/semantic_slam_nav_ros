@@ -1,7 +1,7 @@
 /*
  * @Author: 王培荣
  * @Date: 2020-01-03 15:30:25
- * @LastEditTime : 2020-01-03 21:37:22
+ * @LastEditTime : 2020-01-03 22:15:36
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/aip-cpp/src/gesture_pub_node.cpp
@@ -23,11 +23,10 @@ ros::Publisher pub_voice;
 aip::Bodyanalysis client("18165604", "EXXFhKHgb8uAGvo2yu9qAf4g", "KTxGCvBRK6yvSAN1DHOh24Cl1Wk3G0jU");
  
 void img_callback(const sensor_msgs::ImageConstPtr &msgRGB)
-{  
-    
+{   
     try
     { 
-        cv_bridge::CvImagePtr cv_image = cv_bridge::toCvCopy(msgRGB);
+        cv_bridge::CvImagePtr cv_image = cv_bridge::toCvCopy(msgRGB, sensor_msgs::image_encodings::BGR8);
         Json::Value result;
         std::string image;
         
@@ -44,22 +43,21 @@ void img_callback(const sensor_msgs::ImageConstPtr &msgRGB)
         "probability:  " << result["result"][0]["probability"] << std::endl << std::endl << std::endl;  
         cv::Mat img = cv_image->image;
         for(int i = 0; i < result["result_num"].asInt(); i++){
-            
-            int left = result["result"][i]["left"].asInt();
-            int top = result["result"][i]["top"].asInt();
-            int height = result["result"][i]["height"].asInt();
-            int width = result["result"][i]["width"].asInt();
-            cv::putText(img, result["result"][i]["classname"].asString(), cv::Point2i(left, top), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 255, 255));
-            cv::rectangle(img, cv::Rect(left, top, width, height), cv::Scalar(255, 0, 0),1, cv::LINE_8,0);
-            std_msgs::String voice_word;
-            voice_word.data = result["result"][i]["classname"].asString();
-            pub_voice.publish(voice_word);
-            cv::namedWindow("gesture"); 
-            cv::imshow("gesture", img);
-            cv::waitKey(10);
+            if(result["result"][i]["classname"].asString() != "Face"){
+                int left = result["result"][i]["left"].asInt();
+                int top = result["result"][i]["top"].asInt();
+                int height = result["result"][i]["height"].asInt();
+                int width = result["result"][i]["width"].asInt();
+                cv::putText(img, result["result"][i]["classname"].asString(), cv::Point2i(left, top), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 255, 255));
+                cv::rectangle(img, cv::Rect(left, top, width, height), cv::Scalar(255, 0, 0),1, cv::LINE_8,0);
+                std_msgs::String voice_word;
+                voice_word.data = result["result"][i]["classname"].asString();
+                pub_voice.publish(voice_word); 
+            } 
         }
-
-        
+        cv::namedWindow("gesture"); 
+        cv::imshow("gesture", img);
+        cv::waitKey(10); 
     }
     catch (cv_bridge::Exception& e)
     {

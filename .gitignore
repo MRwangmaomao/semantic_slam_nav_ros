@@ -6,3 +6,6 @@ data/map.bin
 data/octomap.ot
 data/KeyFrameTrajectory.txt
 data/CameraTrajectory.txt
+data/face.jpg
+data/gesture.jpg
+data/tts_sample.wav
