@@ -1,7 +1,7 @@
 /*
  * @Author: 王培荣
  * @Date: 2019-12-29 10:10:42
- * @LastEditTime : 2020-01-02 22:57:34
+ * @LastEditTime : 2020-01-04 00:43:07
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/orbslam/src/Detector.cc
@@ -21,7 +21,7 @@ DEFINE_LAYER_CREATOR(Noop)
 //class Detector
 //{
 // 初始化
-Detector::Detector()
+Detector::Detector(std::string rospackage_path)
 {
     // 这里的 两个文件地址需要传入
     det_net_ptr = new(ncnn::Net); // 模型
@@ -30,8 +30,14 @@ Detector::Detector()
     det_net_ptr->register_custom_layer("Silence", Noop_layer_creator);// 避免在log中打印并没有使用的blobs的信息。
     // original pretrained model from https://github.com/chuanqi305/MobileNetv2-SSDLite
     // https://github.com/chuanqi305/MobileNetv2-SSDLite/blob/master/ssdlite/voc/deploy.prototxt
-    det_net_ptr->load_param("/home/wpr/code/catkin_ws/src/orbslam_semantic_nav_ros/Thirdparty/ncnn/model/mobilenetv2_ssdlite_voc.param");
-    det_net_ptr->load_model("/home/wpr/code/catkin_ws/src/orbslam_semantic_nav_ros/Thirdparty/ncnn/model/mobilenetv2_ssdlite_voc.bin");
+    
+    std::string path = rospackage_path + "Thirdparty/ncnn/model/mobilenetv2_ssdlite_voc.param";
+    std::cout << "载入模型参数: " << path << std::endl;
+    det_net_ptr->load_param(path.c_str());
+    
+    path = rospackage_path + "Thirdparty/ncnn/model/mobilenetv2_ssdlite_voc.bin";
+    std::cout << "载入模型文件: " << path << std::endl;
+    det_net_ptr->load_model(path.c_str());
 
 }
 

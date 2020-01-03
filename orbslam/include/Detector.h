@@ -1,3 +1,11 @@
+/*
+ * @Author: 王培荣
+ * @Date: 2020-01-02 15:22:49
+ * @LastEditTime : 2020-01-03 23:57:42
+ * @LastEditors  : Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/orbslam/include/Detector.h
+ */
 /* This file is part of ORB-SLAM2-SSD-Semantic.
 * 2d目标检测
 */
@@ -23,7 +31,7 @@ class Detector
 {
 public:
   /** Default constructor */
-  Detector();// 网络初始化
+  Detector(std::string);// 网络初始化
 
   /** Default destructor */
   ~Detector();// 析构函数

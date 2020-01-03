@@ -12,7 +12,7 @@
 #include "include/msp_errors.h"
 #include "include/speech_recognizer.h"
 #include <iconv.h>
- 
+#include <opencv2/core/core.hpp>
 #include <ros/ros.h>
 #include <std_msgs/String.h>
 
@@ -21,7 +21,9 @@
  
 int wakeupFlag   = 0 ;
 int resultFlag   = 0 ;
- 
+
+std::string rospackage_path;
+
 static void show_result(char *string, char is_over)
 {
     resultFlag=1;   
@@ -125,6 +127,29 @@ int main(int argc, char* argv[])
     ros::init(argc, argv, "voiceRecognition");
     ros::NodeHandle n;
     ros::start();
+
+    if(argc != 2)
+    {
+        std::cerr << std::endl << "缺少参数" << std::endl << 
+        "Usage: rosrun slam_semantic_nav_ros face_pub_node" << std::endl;
+        return 1;
+    }
+    cv::FileStorage fsSettings(argv[1], cv::FileStorage::READ);
+    if(!fsSettings.isOpened()){
+        std::cerr << std::endl <<
+            std::endl << 
+            "---------------------------------------------" << std::endl << 
+            "---------------------------------------------" << std::endl << 
+            "您的文件路径设置错误了，请在roslaunch中修改配置文件的路径！！！" << std::endl <<
+            std::endl <<
+            std::endl <<
+            "祝您实验取得成功。" << std::endl << 
+            "---------------------------------------------" << std::endl << 
+            "---------------------------------------------" << std::endl;
+            exit(1);
+    }
+    fsSettings["rospackage_path"] >> rospackage_path;
+
     ros::Rate loop_rate(10);
     
     // 声明Publisher和Subscriber
@@ -142,14 +167,14 @@ int main(int argc, char* argv[])
         if (wakeupFlag){
             ROS_INFO("Wakeup...");
             int ret = MSP_SUCCESS;
-            const char* login_params = "appid = 5e0e18ce, work_dir = /home/wpr/code/catkin_ws/src/orbslam_semantic_nav_ros/data/";
- 
+            std::string login_params = "appid = 5e0e18ce, work_dir = " + rospackage_path + "data/";
+            
             const char* session_begin_params =
                 "sub = iat, domain = iat, language = zh_cn, "
                 "accent = mandarin, sample_rate = 16000, "
                 "result_type = plain, result_encoding = utf8";
  
-            ret = MSPLogin(NULL, NULL, login_params);
+            ret = MSPLogin(NULL, NULL, login_params.c_str());
             if(MSP_SUCCESS != ret){
                 MSPLogout();
                 printf("MSPLogin failed , Error code %d.\n",ret);

@@ -191,15 +191,15 @@ ${EIGEN3_LIBS}
 ${Pangolin_LIBRARIES}
 ${PROJECT_SOURCE_DIR}/Thirdparty/DBoW2/lib/libDBoW2.so
 ${PROJECT_SOURCE_DIR}/Thirdparty/g2o/lib/libg2o.so
-${PROJECT_SOURCE_DIR}/lib/liborbslam_semantic_nav_ros.so
+${PROJECT_SOURCE_DIR}/lib/libslam_semantic_nav_ros.so
 ${PCL_LIBRARIES}  
 )
 
-add_executable(tts_subscribe speech/src/tts_subscribe.cpp)
-target_link_libraries(tts_subscribe ${catkin_LIBRARIES} libmsc.so -ldl -lpthread)
+add_executable(tts_subscribe_node speech/src/tts_subscribe_node.cpp)
+target_link_libraries(tts_subscribe_node ${catkin_LIBRARIES} libmsc.so -ldl -lpthread)
 
-add_executable(iat_publish speech/src/iat_publish.cpp speech/src/speech_recognizer.c speech/src/linuxrec.c)
-target_link_libraries(iat_publish ${catkin_LIBRARIES} libmsc.so -ldl -lpthread -lm -lrt -lasound)
+add_executable(iat_publish_node speech/src/iat_publish_node.cpp speech/src/speech_recognizer.c speech/src/linuxrec.c)
+target_link_libraries(iat_publish_node ${catkin_LIBRARIES} libmsc.so -ldl -lpthread -lm -lrt -lasound)
 
 add_executable(gesture_pub_node aip-cpp/src/gesture_pub_node.cpp )
 target_link_libraries(gesture_pub_node ${catkin_LIBRARIES} ${OpenCV_LIBS} -lcurl -ljsoncpp -lcrypto)

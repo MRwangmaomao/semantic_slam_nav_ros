@@ -1,7 +1,7 @@
 /*
  * @Author: 王培荣
  * @Date: 2019-12-29 10:10:42
- * @LastEditTime : 2020-01-02 23:33:59
+ * @LastEditTime : 2020-01-04 00:32:43
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/orbslam/src/RunDetect.cc
@@ -13,8 +13,7 @@
 #include "RunDetect.h"
 
 RunDetect::RunDetect()
-{
-    mDetector = new(Detector);
+{ 
     mvKeyframes.clear();// 关键帧数组清空===
     colorImgs.clear();  // 彩色图像====
     mRunThread = make_shared<thread>( bind(&RunDetect::Run, this ) );// 可视化线程 共享指针 绑定 RunDetect::Run()函数
@@ -39,6 +38,8 @@ void RunDetect::insertKFColorImg(KeyFrame* kf, cv::Mat color)
 void RunDetect::readParameter(std::string filePath){
     cv::FileStorage fSettings(filePath, cv::FileStorage::READ);
     mDisplayDetect = fSettings["DisplayDetect"];
+    std::string path = fSettings["rospackage_path"];
+    mDetector = new Detector(path);
 }
 
 void RunDetect::Run(void)

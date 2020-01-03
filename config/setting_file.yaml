@@ -1,34 +1,40 @@
 %YAML:1.0
 
 # # realsensed400
-rospackage_path: "/home/wpr/code/catkin_ws/src/orbslam_semantic_nav_ros/"
-color_img_topic: "/d400/color/image_raw"
-depth_img_topic: "/d400/aligned_depth_to_color/image_raw"
+rospackage_path: "/home/wpr/code/catkin_ws/src/orbslam_semantic_nav_ros/" #ros包路径
+color_img_topic: "/d400/color/image_raw" #彩色图像
+depth_img_topic: "/d400/aligned_depth_to_color/image_raw" #深度图像
+
 map_frame_id_param: "/map"
 camera_frame_id_param: "/camera_link"
 name_of_node: "/IM_robot"
-map_file_name_param: "config/map.bin"
-voc_file_name_param: "Vocabulary/ORBvoc.txt"
-settings_file_name_param: "config/realsensed400.yaml"
-load_map_param: 0
-publish_pointcloud_param: 0
-publish_pose_param: 1
+
+map_file_name_param: "config/map.bin" #
+voc_file_name_param: "Vocabulary/ORBvoc.txt" 
+settings_file_name_param: "config/realsensed400.yaml" 
+load_map_param: 0 # 纯定位模式或者建图和定位模式
+publish_pointcloud_param: 1 # 发送相机位姿
+publish_pose_param: 0 # 发送相机位姿
 min_observations_per_point: 2
+
+# ----------------------------------------------------------------------------
 
 # # realsensed435
 # rospackage_path: "/home/wpr/code/catkin_ws/src/orbslam_semantic_nav_ros/"
-# color_img_topic: "/d400/color/image_raw"
-# depth_img_topic: "/d400/aligned_depth_to_color/image_raw"
+# color_img_topic: "/d435/color/image_raw"
+# depth_img_topic: "/d435/aligned_depth_to_color/image_raw"
 # map_frame_id_param: "/map"
 # camera_frame_id_param: "/camera_link"
 # name_of_node: "/IM_robot"
 # map_file_name_param: "config/map.bin"
 # voc_file_name_param: "Vocabulary/ORBvoc.txt"
-# settings_file_name_param: "config/realsensed400.yaml"
+# settings_file_name_param: "config/realsensed435.yaml"
 # load_map_param: 0
 # publish_pointcloud_param: 0
 # publish_pose_param: 1
 # min_observations_per_point: 2
+
+# ----------------------------------------------------------------------------
 
 # kinect
 # rospackage_path: "/home/wpr/code/catkin_ws/src/orbslam_semantic_nav_ros/"

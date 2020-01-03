@@ -4,6 +4,9 @@
 # Camera Parameters. Adjust them!
 #--------------------------------------------------------------------------------------------
 
+# ros package path
+rospackage_path: "/home/wpr/code/catkin_ws/src/orbslam_semantic_nav_ros/" #ros包路径
+
 # Camera calibration and distortion parameters (OpenCV) 
 Camera.fx: 611.4509887695312
 Camera.fy: 611.4857177734375
