@@ -70,6 +70,7 @@ find_package(Pangolin REQUIRED)
 
 # 点云显示 adding for point cloud viewer and mapper
 find_package( PCL REQUIRED )
+
 # octomap==================
 set(OCTOMAP_INCLUDE_DIRS "/opt/ros/kinetic/include")
 set(OCTOMAP_LIBRARIES "/opt/ros/kinetic/lib/liboctomap.so /opt/ros/kinetic/lib/liboctomath.so")
@@ -194,10 +195,10 @@ ${PROJECT_SOURCE_DIR}/lib/liborbslam_semantic_nav_ros.so
 ${PCL_LIBRARIES}  
 )
 
-add_executable(tts_subscribe src/tts_subscribe.cpp)
+add_executable(tts_subscribe speech/src/tts_subscribe.cpp)
 target_link_libraries(tts_subscribe ${catkin_LIBRARIES} libmsc.so -ldl -lpthread)
 
-add_executable(iat_publish src/iat_publish.cpp speech/src/speech_recognizer.c speech/src/linuxrec.c)
+add_executable(iat_publish speech/src/iat_publish.cpp speech/src/speech_recognizer.c speech/src/linuxrec.c)
 target_link_libraries(iat_publish ${catkin_LIBRARIES} libmsc.so -ldl -lpthread -lm -lrt -lasound)
 
 add_executable(gesture_publish aip-cpp/src/gesture_publish.cpp)

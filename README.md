@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2019-12-31 15:21:52
- * @LastEditTime : 2020-01-03 10:42:03
+ * @LastEditTime : 2020-01-03 15:10:34
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/README.md
@@ -38,6 +38,8 @@ vtk 5
 pcl 1.7
 opencv 3.4
 Eigen
+pangolin
+octomap
 
 ### 4 安装语音功能
 - step1 在科大讯飞注册账户，修改appid
@@ -60,7 +62,7 @@ sudo apt-get install curl
 catkin_make
 ```
  
-
+ 
 ## 语义地图
 ![merge-map](image/merge_2d3d_map2.png)
 
