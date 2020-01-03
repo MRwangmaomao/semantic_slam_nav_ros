@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(orbslam_semantic_nav_ros)
+project(slam_semantic_nav_ros)
 
 SET(CMAKE_EXPORT_COMPILE_COMMANDS "ON")
 

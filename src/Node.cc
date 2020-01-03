@@ -1,7 +1,7 @@
 /*
  * @Author: 王培荣
  * @Date: 2019-12-29 11:15:26
- * @LastEditTime : 2019-12-31 23:06:03
+ * @LastEditTime : 2020-01-03 15:02:31
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/src/RGBDNode.cpp
@@ -15,8 +15,21 @@
 Node::Node (ros::NodeHandle &node_handle, std::string config_file_path) {
   ROS_INFO_STREAM("Setting file path is: " << config_file_path);
   it_ = std::shared_ptr<image_transport::ImageTransport>(new image_transport::ImageTransport(node_handle));
-  close_system_ = false;
+  close_system_ = false; 
   cv::FileStorage fsSettings(config_file_path, cv::FileStorage::READ);
+  if(!fsSettings.isOpened()){
+    std::cerr << std::endl <<
+        std::endl << 
+        "---------------------------------------------" << std::endl << 
+        "---------------------------------------------" << std::endl << 
+        "您的文件路径设置错误了，请在roslaunch中修改配置文件的路径！！！" << std::endl <<
+        std::endl <<
+        std::endl <<
+        "祝您实验取得成功。" << std::endl << 
+        "---------------------------------------------" << std::endl << 
+        "---------------------------------------------" << std::endl;
+        exit(1);
+  }
   fsSettings["name_of_node"] >> name_of_node_;
   fsSettings["rospackage_path"] >> rospackage_path_;
   fsSettings["color_img_topic"] >> color_img_topic_;
