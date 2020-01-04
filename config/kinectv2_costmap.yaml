@@ -1,0 +1,61 @@
+%YAML:1.0
+
+
+# cost map parameters
+resolution_size: 0.02 # default: 0.02
+map_width: 10.0 # default: 6.0
+map_height: 10.0 # default: 5.0 
+
+# lidar parameters
+lidar_topic: "/scan"
+robot_pose_topic: "/gt"  
+
+# camera parameters  
+camera_name: "kinect2"
+camera_frame: "kinect2_rgb_optical_frame"
+depth_topic: "/kinect2/qhd/image_color_rect"
+camera_info_topic: "/kinect2/qhd/image_depth_rect" 
+image_height: 540
+image_width: 960
+fx: 571.8319822931295
+fy: 568.5477678366276
+cx: 436.7418038692657
+cy: 259.9872860050479
+depthScale: 1000
+
+# /base_link to /d400_depth 
+DEPTH_BASE:  !!opencv-matrix
+   rows: 4
+   cols: 4
+   dt: d 
+   data: [0.00408614, 0.0100528, 0.99994112, 0.22722, 
+         -0.99991554, 0.01237786, 0.00396159, -0.0660151, 
+         -0.01233731, -0.99987286, 0.01010253, 0.915787,
+         0, 0, 0, 1]
+   # q: x,y,z,w -0.49538 0.499547 -0.498407 0.506598
+
+# /base_link to /lidar
+LIDAR_BASE:  !!opencv-matrix
+   rows: 4
+   cols: 4
+   dt: d
+   data: [0.00032936, -0.00137066, 0.03659171, 0.143509,
+          0.00195214, 0.99987232, -0.01585995, -0.0964249, 
+          -0.0365653, 0.01592075, 0.99920444, 0.998049, 
+          0, 0, 0, 1]
+    # q: x,y,z,w 0.00794676 0.0182929 0.000830867 0.999801 
+
+# lidar param
+angle_min: 0.0
+angle_max: 0.0
+
+# robot param
+robot_radius: 0.2
+
+
+
+# Other parameters
+display_costmap: true # default: true 
+
+dwa_file: /home/wpr/code/catkin_ws/src/orbslam_semantic_nav_ros/config/dwa_planning.yaml
+waypoints_file: /home/wpr/code/catkin_ws/src/orbslam_semantic_nav_ros/data/waypoints.txt

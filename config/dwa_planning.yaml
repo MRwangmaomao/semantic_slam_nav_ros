@@ -1,0 +1,17 @@
+%YAML:1.0
+
+max_acc_x: 0.8 #线加速度极大值(0.2-2.0)
+max_acc_theta: 0.5 #角加速度极大值（0.2-3.0）
+max_yaw_rate: 0.5 #角速度极大值（0.2-3.0）
+delta_yam_rate: 0.1 #角速度采样间隔
+max_speed: 0.5 #最大线速度(0.5~1.2)
+min_speed: 0.05 #最小线速度(0.1~0.3)
+delta_speed: 0.02 #速度采样间隔
+foresee: 3.0 #前瞻距离(0~4.0)
+sim_time: 1.0 #局部规划轨迹仿真时间(1.0~2.0)
+region_foresee: 1.0 #区域前瞻距离(0~2.0)
+short_foresee_rate: 0.7 #过弯减速比例（0~1.0）
+sim_period: 0.3 #速度采样时长(0.3)
+aggressive_mode: 0 #激进/保守模式：1 代表激进模式 0 代表保守模式。默认为保守模式，激进模式通过性较高，安全性相对降低.
+distance_threshold: 0.08 #到达目标位置距离 
+waypoints_file: /home/wpr/code/catkin_ws/src/costmap_lrgbd_ros/script/waypoints.txt

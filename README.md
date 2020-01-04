@@ -1,7 +1,7 @@
 <!--
  * @Author: 王培荣
  * @Date: 2019-12-31 15:21:52
- * @LastEditTime : 2020-01-04 11:12:48
+ * @LastEditTime : 2020-01-04 11:24:45
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/README.md
@@ -22,10 +22,16 @@
 
 # 安装说明
 
-版本要求：
+系统版本要求：
 
-Linux:ubuntu16 
+Linux:ubuntu16
 ros:kinect
+
+已测试硬件：
+
+KinectV2相机
+
+realsenseD435,D400相机
 
 ### 1. 添加Vocabulary
 在ros包的下新建Vocabulary文件夹，添加ORBvoc.txt词典。
@@ -85,10 +91,10 @@ catkin_make
 
 修改color_img_topic和depth_img_topic
 
-# 动态环境的ORBSLAM
-![merge-map](image/dynamic_pic2.png)
+### 8 
 
-![point_feature](image/pointfeature.png)
+# 动态环境的ORBSLAM
+![merge-map](image/dynamic_pic2.png) ![point_feature](image/pointfeature.png)
 
 # 语义地图
 

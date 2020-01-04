@@ -46,7 +46,9 @@ find_package(catkin REQUIRED COMPONENTS
   image_transport
   tf
   geometry_msgs
-#   costmap_lrgbd_ros
+  tf2 
+  image_geometry
+  visualization_msgs 
 )
  
 
@@ -100,6 +102,7 @@ std_msgs
 include_directories(
 ${catkin_INCLUDE_DIRS}
 ${PROJECT_SOURCE_DIR}/speech
+${PROJECT_SOURCE_DIR}/costmap/include
 ${PROJECT_SOURCE_DIR}/aip-cpp/include
 ${PROJECT_SOURCE_DIR}
 ${PROJECT_SOURCE_DIR}/include
@@ -207,3 +210,8 @@ target_link_libraries(gesture_pub_node ${catkin_LIBRARIES} ${OpenCV_LIBS} -lcurl
 add_executable(face_pub_node aip-cpp/src/face_pub_node.cpp )
 target_link_libraries(face_pub_node ${catkin_LIBRARIES} ${OpenCV_LIBS} -lcurl -ljsoncpp -lcrypto)
 
+add_executable(rgbd_costmap_node costmap/src/lrgbd_costmap_node.cpp costmap/src/lrgbd2xz.cpp costmap/src/dwa_planning.cpp) 
+target_link_libraries(rgbd_costmap_node  ${catkin_LIBRARIES} ${OpenCV_LIBS})
+ 
+add_executable(record_pose_node costmap/src/record_path_node.cpp) 
+target_link_libraries(record_pose_node  ${catkin_LIBRARIES} ${OpenCV_LIBS})

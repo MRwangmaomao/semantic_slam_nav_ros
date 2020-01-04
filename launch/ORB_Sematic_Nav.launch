@@ -3,8 +3,8 @@
 <!--  strt lidar rgbd camera process--> 
   <param name="use_sim_time" value="true"/>
   
- <node pkg="costmap_lrgbd_ros" type="lrgbd_costmap_node" name="lrgbd_costmap_node" 
-    args="$(find slam_semantic_nav_ros)/config/settings.yaml" clear_params="true" output="screen">
+ <node pkg="slam_semantic_nav_ros" type="rgbd_costmap_node" name="rgbd_costmap_node" 
+    args="$(find slam_semantic_nav_ros)/config/d400_costmap.yaml" clear_params="true" output="screen">
   </node>
   
   <node pkg="slam_semantic_nav_ros" type="kinect_camera_node"  name="kinect_camera_node" 
