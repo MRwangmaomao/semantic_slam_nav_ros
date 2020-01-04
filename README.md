@@ -1,12 +1,13 @@
 <!--
  * @Author: 王培荣
  * @Date: 2019-12-31 15:21:52
- * @LastEditTime : 2020-01-04 02:02:45
+ * @LastEditTime : 2020-01-04 11:12:48
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/README.md
  -->
 # orbslam_semantic_nav_ros
+
 ---
 演示1：
 
@@ -18,6 +19,7 @@
 [![Watch the video](image/video_cover.png)](https://www.bilibili.com/video/av81398597)
 
 ---
+
 # 安装说明
 
 版本要求：
@@ -77,12 +79,16 @@ catkin_make
 
 ### 7 修改config文件夹下的setting.yaml文件和相机的yaml文件
 
+[配置文件说明](config/README.md)
+
 修改rospackage_path，设置为自己对应存储的路径。
 
 修改color_img_topic和depth_img_topic
 
 # 动态环境的ORBSLAM
 ![merge-map](image/dynamic_pic2.png)
+
+![point_feature](image/pointfeature.png)
 
 # 语义地图
 
@@ -94,12 +100,18 @@ roslaunch slam_semantic_nav_ros ORB_Semantic_Navigation.launch
 ![ssd_detect](image/ssd_detect.png)
 
 
+# 三维重构
+![三维重构](image/904A_2.png)
+
 # 语音对话
 ```
 roslaunch slam_semantic_nav_ros gesture_speak.launch 
 ```
 
 # 手势识别
+
+![手势1](image/gesture1.png) ![手势2](image/gesture2.png)
+
 ```
 roslaunch slam_semantic_nav_ros gesture_speak.launch
 ```
