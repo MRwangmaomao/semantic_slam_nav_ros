@@ -1,7 +1,7 @@
 <!--
  * @Author: 王培荣
  * @Date: 2019-12-31 15:21:52
- * @LastEditTime : 2020-01-04 11:24:45
+ * @LastEditTime : 2020-01-04 12:14:08
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/README.md
@@ -11,12 +11,12 @@
 ---
 演示1：
 
-[![Watch the video](image/cover.png)](https://www.bilibili.com/video/av81958116)
+[![Watch the video](image/cover1.png)](https://www.bilibili.com/video/av81958116)
 
 ---
 
 演示2：
-[![Watch the video](image/video_cover.png)](https://www.bilibili.com/video/av81398597)
+[![Watch the video](image/cover2.png)](https://www.bilibili.com/video/av81398597)
 
 ---
 
@@ -91,23 +91,30 @@ catkin_make
 
 修改color_img_topic和depth_img_topic
 
-### 8 
+### 8 相关公开数据集
+
 
 # 动态环境的ORBSLAM
-![merge-map](image/dynamic_pic2.png) ![point_feature](image/pointfeature.png)
+![merge-map](image/dynamic_pic2.png) 
+
+
+![point_feature](image/pointfeature1.png)
 
 # 语义地图
 
 ```
-roslaunch slam_semantic_nav_ros ORB_Semantic_Navigation.launch
+roslaunch slam_semantic_nav_ros ORB_Sematic_Nav.launch
 ```
 ![merge-map](image/ssd_map1.png)
 
-![ssd_detect](image/ssd_detect.png)
+![ssd_detect](image/ssd_detect1.png)
 
 
 # 三维重构
-![三维重构](image/904A_2.png)
+![三维重构](image/3d_restructure1.png)
+
+# 代价地图与导航
+![costmap](image/costmap1.png)
 
 # 语音对话
 ```
