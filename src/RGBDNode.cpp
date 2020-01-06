@@ -1,7 +1,7 @@
 /*
  * @Author: 王培荣
  * @Date: 2019-12-29 11:15:26
- * @LastEditTime : 2019-12-31 14:17:34
+ * @LastEditTime : 2020-01-06 00:16:12
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/src/RGBDNode.cpp
@@ -53,8 +53,6 @@ void RGBDNode::ImageCallback (const sensor_msgs::ImageConstPtr& msgRGB, const se
 
   if(Update()){
     std::cout << "关闭ROS系统!" << std::endl;
-
-
-    
+ 
   }
 }

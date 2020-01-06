@@ -865,7 +865,7 @@ void Tracking::Track()
     // 如果图像复位过、或者第一次运行，则为 NO_IMAGE_YET 状态
     if(mState == NO_IMAGES_YET)
     {
-    mState = NOT_INITIALIZED;// 未初始化
+        mState = NOT_INITIALIZED;// 未初始化
     }
 
     // mLastProcessedState 存储了 Tracking最新的状态，用于 FrameDrawer中的绘制

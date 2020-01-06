@@ -73,10 +73,10 @@ namespace ORB_SLAM2
 // 默认初始化函数  单词表文件 txt/bin文件    配置文件     传感器：单目、双目、深度
 System::System(const string &strVocFile, const string &strSettingsFile, const eSensor sensor, std::string save_folder_path, const bool bUseViewer, bool activate_localization_mode):
           mSensor(sensor), mpViewer(static_cast<Viewer*>(NULL)), mbReset(false), mFolderPath(save_folder_path),
-          mbDeactivateLocalizationMode(false), mbActivateLocalizationMode(activate_localization_mode) //直接初始化变量
+          mbDeactivateLocalizationMode(false), mbActivateLocalizationMode(false) //直接初始化变量
 
 { 
-// 0. 输出信息  Output welcome message
+// 1. 输出信息  Output welcome message
     cout << endl << "ORB-SLAM2 单目双目深度相机 SLAM" << endl << endl; 
    
     string str_sensor[] = {"Monocular", "Stereo", "RGB-D"};
@@ -90,7 +90,7 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
         exit(-1);
     }
 
-// 1. 创建字典 mpVocabulary = new ORBVocabulary()；并从文件中载入字典=========================
+// 2. 创建字典 mpVocabulary = new ORBVocabulary()；并从文件中载入字典=========================
     //Load ORB Vocabulary
     cout << endl << "加载 ORB词典. This could take a while..." << endl;
  
@@ -109,19 +109,16 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
         exit(-1);
     }
     printf("数据库载入时间 Vocabulary loaded in %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);//显示文件载入时间 秒
-  
-
-// 2. 如果是纯定位模式则加载地图 =============================================
     
-    mpKeyFrameDatabase = new KeyFrameDatabase(*mpVocabulary); // 关键帧数据库
-     
 // 3. 创建地图对象 Map，使用特征字典mpVocabulary 创建关键帧数据库 KeyFrameDatabase===================    
     mpMap = new Map();
+    mpKeyFrameDatabase = new KeyFrameDatabase(*mpVocabulary); // 关键帧数据库
+    
 // 4. 创建地图显示帧显示 两个显示窗口  Create Drawers. These are used by the Viewer
  
     mpMapDrawer = new MapDrawer(mpMap, strSettingsFile);//地图显示
     mpFrameDrawer = new FrameDrawer(mpMap, mpMapDrawer, strSettingsFile);//关键帧显示
-    
+ 
     // Initialize pointcloud mapping  初始化 点云建图线程==============add====
     // float resolution = fsSettings["PointCloudMapping.Resolution"];
     // mpPointCloudMapping = make_shared<PointCloudMapping>( resolution ); 
@@ -138,20 +135,23 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
               mpMap, mpKeyFrameDatabase, strSettingsFile, mSensor,
                       mpRunDetect);
     
-
-    
+ 
 // 6. 初始化 局部地图构建 线程 并启动  Initialize the Local Mapping thread and launch
-    mpLocalMapper = new LocalMapping(mpMap, mSensor==MONOCULAR);
+    mpLocalMapper = new LocalMapping(mpMap, mSensor==RGBD);
     mptLocalMapping = new thread(&ORB_SLAM2::LocalMapping::Run, mpLocalMapper);
 
-    
-// 7. 初始化闭环检测线程 并启动 Initialize the Loop Closing thread and launch
+// 7. 如果是纯定位模式则加载地图 =============================================
+    if (activate_localization_mode && mpMap->Load(mFolderPath + "map.bin", *mpVocabulary)) { 
+        mpTracker->mbOnlyTracking = true; 
+        std::cout << "Using loaded map with " << mpMap->MapPointsInMap() << " points\n" << std::endl;
+    }
+
+// 8. 初始化闭环检测线程 并启动 Initialize the Loop Closing thread and launch
     mpLoopCloser = new LoopClosing(mpMap, mpKeyFrameDatabase, mpVocabulary, mSensor!=MONOCULAR);
     mptLoopClosing = new thread(&ORB_SLAM2::LoopClosing::Run, mpLoopCloser);
 
-    
-
-// 8. 初始化 跟踪线程可视化 并启动 //Initialize the Viewer thread and launch
+     
+// 9. 初始化 跟踪线程可视化 并启动 //Initialize the Viewer thread and launch
     if(bUseViewer)
     {
         mpViewer = new Viewer(this, mpFrameDrawer,mpMapDrawer,mpTracker,strSettingsFile, mFolderPath);
@@ -159,7 +159,7 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
         mpTracker->SetViewer(mpViewer);
     }
     
-// 9. 线程之间传递指针 Set pointers between threads
+// 10. 线程之间传递指针 Set pointers between threads
     mpTracker->SetLocalMapper(mpLocalMapper);   // 跟踪线程 关联 局部建图和闭环检测线程
     mpTracker->SetLoopClosing(mpLoopCloser);
 
@@ -167,12 +167,8 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     mpLocalMapper->SetLoopCloser(mpLoopCloser);
 
     mpLoopCloser->SetTracker(mpTracker);	  // 闭环检测线程 关联 跟踪和局部建图线程
-    mpLoopCloser->SetLocalMapper(mpLocalMapper);
-
-    if (mbActivateLocalizationMode && mpMap->Load(mFolderPath + "map.bin", *mpVocabulary)) {
-        //  && LoadMap("map.bin")
-        std::cout << "Using loaded map with " << mpMap->MapPointsInMap() << " points\n" << std::endl;
-    }
+    mpLoopCloser->SetLocalMapper(mpLocalMapper); 
+ 
 }
 
 
@@ -241,16 +237,17 @@ cv::Mat System::TrackRGBD(const cv::Mat &im, const cv::Mat &depthmap, const doub
 {
     if(mSensor!=RGBD)
     {
-      cerr << "调用了 深度相机跟踪 TrackRGBD 但是传感器却不是深度相机 RGBD." << endl;
-      exit(-1);
+        cerr << "调用了 深度相机跟踪 TrackRGBD 但是传感器却不是深度相机 RGBD." << endl;
+        exit(-1);
     }
 
-// 1.  模式变换的检测   跟踪+建图  or  跟踪+定位+建图 Check mode change===========
+// 1.  模式变换的检测   跟踪+定位  or  跟踪+定位+建图 Check mode change===========
     {
         unique_lock<mutex> lock(mMutexMode);
         //  跟踪+定位
         if(mbActivateLocalizationMode)
         {
+            std::cout << "Now is pure localization mode!!! " << std::endl;
             mpLocalMapper->RequestStop();//停止 建图
             // Wait until Local Mapping has effectively stopped
             while(!mpLocalMapper->isStopped())
@@ -263,9 +260,10 @@ cv::Mat System::TrackRGBD(const cv::Mat &im, const cv::Mat &depthmap, const doub
         // 跟踪+建图
         if(mbDeactivateLocalizationMode)
         {
-          mpTracker->InformOnlyTracking(false);// 跟踪 + 建图
-          mpLocalMapper->Release();//释放建图线程
-          mbDeactivateLocalizationMode = false;
+            std::cout << "Now is localization and mapping mode!!! " << std::endl;
+            mpTracker->InformOnlyTracking(false);// 跟踪 + 建图
+            mpLocalMapper->Release();//释放建图线程
+            mbDeactivateLocalizationMode = false;
         }
     }
 

@@ -748,70 +748,73 @@ mTimeStamp(timeStamp), mK(K.clone()),mDistCoef(distCoef.clone()), mbf(bf), mThDe
       // 对元素图像中的点 利用 畸变 参数进行校正 得到校正后的坐标 
       // 不是对 整个图像进行校正(时间长)
       void Frame::UndistortKeyPoints()
-      {
-		if(mDistCoef.at<float>(0)==0.0)// 畸变校正参数没有 
-		{
-			mvKeysUn=mvKeys;//校正后的点 和 未校正 的点坐标 二位像素坐标
-			return;
-		}
-		// Fill matrix with points
-		// 关键点坐标（未校正） 转成 opencv mat类型
-		cv::Mat mat(N,2,CV_32F);
-		for(int i=0; i<N; i++)
-		{
-			mat.at<float>(i,0)=mvKeys[i].pt.x;
-			mat.at<float>(i,1)=mvKeys[i].pt.y;
-		}
+      { 
+		  // 暂时假设摄像头图像是经过去除畸变的，反正我的图像已经去畸变了
+		  mvKeysUn=mvKeys;
+		  return;
+		// if(mDistCoef.at<float>(0) <= 0.001 && mDistCoef.at<float>(0) >= -0.001)// 畸变校正参数没有 
+		// { 
+		// 	mvKeysUn=mvKeys;//校正后的点 和 未校正 的点坐标 二位像素坐标
+		// 	return;
+		// }
+		// // Fill matrix with points
+		// // 关键点坐标（未校正） 转成 opencv mat类型
+		// cv::Mat mat(N,2,CV_32F);
+		// for(int i=0; i<N; i++)
+		// {
+		// 	mat.at<float>(i,0)=mvKeys[i].pt.x;
+		// 	mat.at<float>(i,1)=mvKeys[i].pt.y;
+		// }
 
-		// 校正关键点坐标 Undistort points
-		// 函数的功能：将一些 来自 原始图像的2维点坐标进行校正 得到  相应的矫正点坐标。
-		mat=mat.reshape(2);
-		cv::undistortPoints(mat,mat,mK,mDistCoef,cv::Mat(),mK);
-		mat=mat.reshape(1);
+		// // 校正关键点坐标 Undistort points
+		// // 函数的功能：将一些 来自 原始图像的2维点坐标进行校正 得到  相应的矫正点坐标。
+		// mat=mat.reshape(2);
+		// cv::undistortPoints(mat,mat,mK,mDistCoef,cv::Mat(),mK);
+		// mat=mat.reshape(1);
 
-		// Fill undistorted keypoint vector 填充校正后的坐标
-		mvKeysUn.resize(N);
-		for(int i=0; i<N; i++)
-		{
-			cv::KeyPoint kp = mvKeys[i];
-			kp.pt.x=mat.at<float>(i,0);
-			kp.pt.y=mat.at<float>(i,1);
-			mvKeysUn[i]=kp;
-		}
+		// // Fill undistorted keypoint vector 填充校正后的坐标
+		// mvKeysUn.resize(N);
+		// for(int i=0; i<N; i++)
+		// {
+		// 	cv::KeyPoint kp = mvKeys[i];
+		// 	kp.pt.x=mat.at<float>(i,0);
+		// 	kp.pt.y=mat.at<float>(i,1);
+		// 	mvKeysUn[i]=kp;
+		// }
       }
 
       // 对于未校正的图像 计算校正后 图像的 尺寸
       void Frame::ComputeImageBounds(const cv::Mat &imLeft)
       {
-	  if(mDistCoef.at<float>(0)!=0.0)// 畸变校正参数 有
-	  {
-	      cv::Mat mat(4,2,CV_32F);
-	      // 图像四个顶点位置
-	      // (0,0)  (col,0)  (0,row)   (col,row)
-	      mat.at<float>(0,0)=0.0; mat.at<float>(0,1)=0.0;
-	      mat.at<float>(1,0)=imLeft.cols; mat.at<float>(1,1)=0.0;
-	      mat.at<float>(2,0)=0.0; mat.at<float>(2,1)=imLeft.rows;
-	      mat.at<float>(3,0)=imLeft.cols; mat.at<float>(3,1)=imLeft.rows;
+		if(mDistCoef.at<float>(0)!=0.0)// 畸变校正参数 有
+		{
+			cv::Mat mat(4,2,CV_32F);
+			// 图像四个顶点位置
+			// (0,0)  (col,0)  (0,row)   (col,row)
+			mat.at<float>(0,0)=0.0; mat.at<float>(0,1)=0.0;
+			mat.at<float>(1,0)=imLeft.cols; mat.at<float>(1,1)=0.0;
+			mat.at<float>(2,0)=0.0; mat.at<float>(2,1)=imLeft.rows;
+			mat.at<float>(3,0)=imLeft.cols; mat.at<float>(3,1)=imLeft.rows;
 
-	      // Undistort corners
-	      // 对图像四个点进行 畸变校正
-	      mat=mat.reshape(2);
-	      cv::undistortPoints(mat,mat,mK,mDistCoef,cv::Mat(),mK);
-	      mat=mat.reshape(1);
+			// Undistort corners
+			// 对图像四个点进行 畸变校正
+			mat=mat.reshape(2);
+			cv::undistortPoints(mat,mat,mK,mDistCoef,cv::Mat(),mK);
+			mat=mat.reshape(1);
 
-	      mnMinX = min(mat.at<float>(0,0),mat.at<float>(2,0));
-	      mnMaxX = max(mat.at<float>(1,0),mat.at<float>(3,0));
-	      mnMinY = min(mat.at<float>(0,1),mat.at<float>(1,1));
-	      mnMaxY = max(mat.at<float>(2,1),mat.at<float>(3,1));
+			mnMinX = min(mat.at<float>(0,0),mat.at<float>(2,0));
+			mnMaxX = max(mat.at<float>(1,0),mat.at<float>(3,0));
+			mnMinY = min(mat.at<float>(0,1),mat.at<float>(1,1));
+			mnMaxY = max(mat.at<float>(2,1),mat.at<float>(3,1));
 
-	  }
-	  else // 无畸变校正参数  也就是校正后的图像 图像大小不变
-	  {
-	      mnMinX = 0.0f;
-	      mnMaxX = imLeft.cols;
-	      mnMinY = 0.0f;
-	      mnMaxY = imLeft.rows;
-	  }
+		}
+		else // 无畸变校正参数  也就是校正后的图像 图像大小不变
+		{
+			mnMinX = 0.0f;
+			mnMaxX = imLeft.cols;
+			mnMinY = 0.0f;
+			mnMaxY = imLeft.rows;
+		}
       }
       
 /**

@@ -1,12 +1,22 @@
 <!--
  * @Author: 王培荣
  * @Date: 2019-12-31 15:21:52
- * @LastEditTime : 2020-01-04 12:14:08
+ * @LastEditTime : 2020-01-06 00:15:51
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/README.md
  -->
 # orbslam_semantic_nav_ros
+
+TODO：
+
+1. 重定位的地图加载失败问题
+
+2. 加入手势的ros message
+
+3. 常用语音对话与语音唤醒功能
+
+4. 待定
 
 ---
 演示1：
@@ -24,14 +34,15 @@
 
 系统版本要求：
 
-Linux:ubuntu16
-ros:kinect
+- Linux:ubuntu16
+
+- ros:kinect
 
 已测试硬件：
 
-KinectV2相机
+- KinectV2相机
 
-realsenseD435,D400相机
+- realsense D435,D400相机
 
 ### 1. 添加Vocabulary
 在ros包的下新建Vocabulary文件夹，添加ORBvoc.txt词典。
@@ -51,11 +62,17 @@ sudo cp Thirdparty/ncnn/build/install/lib/libncnn.a /usr/lib
 ```
 
 ### 3 其他库
+
 vtk 5
+
 pcl 1.7
+
 opencv 3.4
+
 Eigen
-pangolin
+
+[pangolin](https://github.com/stevenlovegrove/Pangolin)
+
 octomap
 
 ### 4 安装科大讯飞语音相关库
@@ -78,8 +95,11 @@ sudo apt-get install curl
 
 修改aip-cpp/src中的appid,AK,SK
 
-### 6 开始编译
+### 6 开始下载源码进行编译
 ```
+mkdir -p catkin_ws/src
+git clone git@github.com:MRwangmaomao/semantic_slam_nav_ros.git
+cd ..
 catkin_make
 ```
 

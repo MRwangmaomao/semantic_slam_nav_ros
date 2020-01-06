@@ -12,7 +12,7 @@ name_of_node: "/IM_robot"
 map_file_name_param: "config/map.bin" #
 voc_file_name_param: "Vocabulary/ORBvoc.txt" 
 settings_file_name_param: "config/realsensed400.yaml" 
-load_map_param: 0 # 纯定位模式或者建图和定位模式
+load_map_param: 0 # 纯定位模式:1  或者建图和定位模式:0
 publish_pointcloud_param: 0 # 是否发送点云,在rviz可视化
 publish_pose_param: 0 # 发送相机位姿，在rviz可视化，用于导航等
 min_observations_per_point: 2

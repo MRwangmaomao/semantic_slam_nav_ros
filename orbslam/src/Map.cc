@@ -34,10 +34,9 @@ void Map::AddMapPoint(MapPoint *pMP)
 void Map::EraseMapPoint(MapPoint *pMP)
 {
     unique_lock<mutex> lock(mMutexMap);
-    
-    // wyw 添加
-  //      auto  it = mspMapPoints.find(pMP);// 获取指针
-  //      delete *it;//删除
+    // 添加
+    //      auto  it = mspMapPoints.find(pMP);// 获取指针
+    //      delete *it;//删除
     
     mspMapPoints.erase(pMP);// 删除了指针  内容清除？
 
@@ -50,14 +49,14 @@ void Map::EraseKeyFrame(KeyFrame *pKF)
 {
     unique_lock<mutex> lock(mMutexMap);
     
-        // wyw 添加
-   //     auto  it = mspKeyFrames.find(pKF);// 获取指针
-   //     delete *it;//删除
+    // 添加
+    //     auto  it = mspKeyFrames.find(pKF);// 获取指针
+    //     delete *it;//删除
         
     mspKeyFrames.erase(pKF);// 删除了指针  内容清除？
 
     // TODO: This only erase the pointer.
-    // Delete the MapPoint
+    // Delete the MapKeyFrame
 }
 
 void Map::SetReferenceMapPoints(const vector<MapPoint *> &vpMPs)
@@ -150,7 +149,7 @@ KeyFrame* Map::_ReadKeyFrame(ifstream &f,
   fr.mpORBvocabulary = &voc;
   f.read((char*)&fr.mnId, sizeof(fr.mnId));              // 关键帧 ID 
   f.read((char*)&fr.mTimeStamp, sizeof(fr.mTimeStamp));  // 时间戳 timestamp
- 
+  
   cv::Mat Tcw(4,4,CV_32F);                               // 位置 position
   f.read((char*)&Tcw.at<float>(0, 3), sizeof(float));
   f.read((char*)&Tcw.at<float>(1, 3), sizeof(float));
@@ -168,6 +167,7 @@ KeyFrame* Map::_ReadKeyFrame(ifstream &f,
   fr.mvKeys.reserve(fr.N);
   fr.mDescriptors.create(fr.N, 32, CV_8UC1);             // 关键点描述子===
   fr.mvpMapPoints = vector<MapPoint*>(fr.N,static_cast<MapPoint*>(NULL)); // 关键点对应的地图点====
+ 
   for (int i=0; i<fr.N; i++) {
     // 关键点======
     cv::KeyPoint kp;
@@ -179,24 +179,27 @@ KeyFrame* Map::_ReadKeyFrame(ifstream &f,
     f.read((char*)&kp.octave,   sizeof(kp.octave));
     fr.mvKeys.push_back(kp);
     // 描述子====
-    for (int j=0; j<32; j++)
+    for (int j=0; j<32; j++)//每个特征点有32个字节的描述子
       f.read((char*)&fr.mDescriptors.at<unsigned char>(i, j), sizeof(char));
     // 地图点====         
     unsigned long int mpidx;
-    f.read((char*)&mpidx, sizeof(mpidx));
+    f.read((char*)&mpidx, sizeof(mpidx)); //特征点对应的地图点
     if (mpidx == ULONG_MAX)	fr.mvpMapPoints[i] = NULL;
     else fr.mvpMapPoints[i] = amp[mpidx];
   }
-  
+  // std::cout << "  fr.mnId: " << fr.mnId << std::endl <<
+  //              "  fr.mTimeStamp: " << fr.mTimeStamp << std::endl << 
+  //              "  Tcw: " << std::endl << Tcw << std::endl << 
+  //              "  fr.N: " << fr.N << std::endl;
   // mono only for now  单目==========
   fr.mvuRight = vector<float>(fr.N,-1);// 关键点 右目匹配点横坐标
   fr.mvDepth = vector<float>(fr.N,-1); // 关键点 深度值
   fr.mpORBextractorLeft = orb_ext;     // 关键点提取器 
-  fr.InitializeScaleLevels();// 金字塔尺度 
-  fr.UndistortKeyPoints();   // 矫正 需要矫正参数====
+  fr.InitializeScaleLevels();// 金字塔尺度  
+  fr.UndistortKeyPoints();   // 矫正 需要矫正参数==== 
   fr.AssignFeaturesToGrid(); // 分配特征点到 图像网格
   fr.ComputeBoW();// 计算 词典表示向量 
-  // cerr << " reading keyfrane id " << fr.mnId << endl;
+  
   KeyFrame* kf = new KeyFrame(fr, this, NULL);// 创建关键帧====
   kf->mnId = fr.mnId; // bleeee why? do I store that?
   // kf->ComputeBoW();
@@ -216,12 +219,12 @@ KeyFrame* Map::_ReadKeyFrame(ifstream &f,
 MapPoint* Map::_ReadMapPoint(ifstream &f, long unsigned int id1)
 {
   long unsigned int id; 
-  f.read((char*)&id, sizeof(id));              // 地图点 ID
+  f.read((char*)&id, sizeof(id));              // 地图点 ID   unsigned long int
 //  std::cout << "read id is: " << id << std::endl;
   cv::Mat wp(3,1, CV_32F);
-  f.read((char*)&wp.at<float>(0), sizeof(float));
-  f.read((char*)&wp.at<float>(1), sizeof(float));
-  f.read((char*)&wp.at<float>(2), sizeof(float));
+  f.read((char*)&wp.at<float>(0), sizeof(float)); // float
+  f.read((char*)&wp.at<float>(1), sizeof(float)); // float
+  f.read((char*)&wp.at<float>(2), sizeof(float)); // float
   int mnFirstKFid=0, mnFirstFrame=0; 
 
   MapPoint* mp = new MapPoint(wp, mnFirstKFid, mnFirstFrame, this);
@@ -250,11 +253,11 @@ bool Map::Load(const string &filename, ORBVocabulary &voc)
 
 // 读取地图点============================
   long unsigned int nb_mappoints, max_id=0;
-  f.read((char*)&nb_mappoints, sizeof(nb_mappoints));  // 地图点数量====            
+  f.read((char*)&nb_mappoints, sizeof(nb_mappoints));  // 地图点数量====    unsigned long int       
   cerr << "reading " << nb_mappoints << " mappoints" << endl; 
   for (unsigned int i=0; i<nb_mappoints; i++) 
   {
-    ORB_SLAM2::MapPoint* mp = _ReadMapPoint(f, i);
+    ORB_SLAM2::MapPoint* mp = _ReadMapPoint(f, i); 
     if (mp->mnId>=max_id) max_id=mp->mnId;
     AddMapPoint(mp);// 记录地图点====
   }
@@ -262,20 +265,21 @@ bool Map::Load(const string &filename, ORBVocabulary &voc)
 
   std::vector<MapPoint*> amp = GetAllMapPoints();// 所有的地图点====
 
-// 读取关键帧==================================
+  // 读取关键帧==================================
   long unsigned int nb_keyframes;
   f.read((char*)&nb_keyframes, sizeof(nb_keyframes));
   cerr << "reading " << nb_keyframes << " keyframe" << endl; 
   vector<KeyFrame*> kf_by_order;
   for (unsigned int i=0; i<nb_keyframes; i++) 
   {
+    // std::cout << "add " << i << "th keyframe : " << std::endl;
     KeyFrame* kf = _ReadKeyFrame(f, voc, amp, &orb_ext); 
     
     AddKeyFrame(kf);
     kf_by_order.push_back(kf);
   }
   std::cout << "add all keyframe end! " << std::endl;
-// 载入最小生成树  Spanning tree =======================
+  // 载入最小生成树  Spanning tree =======================
   map<unsigned long int, KeyFrame*> kf_by_id;// id:关键帧 
   for(auto kf: mspKeyFrames)
 	kf_by_id[kf->mnId] = kf;

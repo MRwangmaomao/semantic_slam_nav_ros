@@ -1,7 +1,7 @@
 /*
  * @Author: 王培荣
  * @Date: 2019-12-29 11:15:26
- * @LastEditTime : 2020-01-03 15:02:31
+ * @LastEditTime : 2020-01-06 16:51:58
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/src/RGBDNode.cpp
@@ -92,7 +92,8 @@ Node::Node (ros::NodeHandle &node_handle, std::string config_file_path) {
 }
 
 void Node::init_slam()
-{
+{ 
+
   orb_slam_ = new ORB_SLAM2::System (voc_file_name_param_, settings_file_name_param_, ORB_SLAM2::System::RGBD, folder_path_, true, load_map_param_); // 初始化slam系统
 }
 
