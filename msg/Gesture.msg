@@ -1,3 +1,5 @@
-float64 x
-float64 y
-float64 theta
+string classname
+int64 left
+int64 top
+int64 width
+int64 height

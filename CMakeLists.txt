@@ -84,6 +84,7 @@ set(OCTOMAP_LIBRARIES "/opt/ros/kinetic/lib/liboctomap.so /opt/ros/kinetic/lib/l
 add_message_files(
    FILES
    Arrived.msg
+   Gesture.msg
  )
 
 ## Generate added messages and services with any dependencies listed here

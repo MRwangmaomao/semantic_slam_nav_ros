@@ -1,7 +1,7 @@
 <!--
  * @Author: 王培荣
  * @Date: 2019-12-31 15:21:52
- * @LastEditTime : 2020-01-09 14:57:16
+ * @LastEditTime : 2020-01-09 16:01:22
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/README.md
@@ -9,10 +9,10 @@
 # orbslam_semantic_nav_ros
 
 TODO：
- 
-1. 加入手势的ros message
+   
+1. 常用语音对话与语音唤醒功能
 
-2. 常用语音对话与语音唤醒功能
+2. 添加基于二维码的全局定位误差矫正功能
 
 3. 待定
 
@@ -110,8 +110,9 @@ catkin_make
 
 修改color_img_topic和depth_img_topic
 
-### 8 相关公开数据集
+### 8 相关公开数据集下载
 
+[OpenLORIS-Scene Dataset](https://lifelong-robotic-vision.github.io/dataset/scene)
 
 # 动态环境的ORBSLAM
 ![merge-map](image/dynamic_pic2.png) 
