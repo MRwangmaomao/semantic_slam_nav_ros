@@ -1,8 +1,8 @@
 <launch>
   
 <!--  strt lidar rgbd camera process-->   
- <node pkg="slam_semantic_nav_ros" type="tts_subscribe_node" name="tts_subscribe_node"  clear_params="true" output="screen"
- args="$(find slam_semantic_nav_ros)/config/setting_file.yaml " >
+ <node pkg="slam_semantic_nav_ros" type="tts_subscribe_node" name="tts_subscribe_node" args="$(find slam_semantic_nav_ros)/config/setting_file.yaml "
+  clear_params="true" output="screen" >
  </node>
   
   <node pkg="slam_semantic_nav_ros" type="gesture_pub_node"  name="gesture_pub_node"  clear_params="true" output="screen" 

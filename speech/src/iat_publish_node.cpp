@@ -21,7 +21,7 @@
  
 int wakeupFlag   = 0 ;
 int resultFlag   = 0 ;
-
+std::string appid = "5e0e18ce";
 std::string rospackage_path;
 
 static void show_result(char *string, char is_over)
@@ -98,7 +98,7 @@ static void demo_mic(const char* session_begin_params)
         printf("start listen failed %d\n", errcode);
     }
     /* demo 10 seconds recording */
-    while(i++ < 10)
+    while(i++ < 5)
         sleep(1);
     errcode = sr_stop_listening(&iat);
     if (errcode) {
@@ -131,7 +131,7 @@ int main(int argc, char* argv[])
     if(argc != 2)
     {
         std::cerr << std::endl << "缺少参数" << std::endl << 
-        "Usage: rosrun slam_semantic_nav_ros face_pub_node" << std::endl;
+        "Usage: rosrun slam_semantic_nav_ros iat_publish_node config_file_path" << std::endl;
         return 1;
     }
     cv::FileStorage fsSettings(argv[1], cv::FileStorage::READ);
@@ -149,6 +149,7 @@ int main(int argc, char* argv[])
             exit(1);
     }
     fsSettings["rospackage_path"] >> rospackage_path;
+    fsSettings["iflytek_appid"] >> appid;
 
     ros::Rate loop_rate(10);
     
@@ -160,6 +161,7 @@ int main(int argc, char* argv[])
  
     ROS_INFO("Sleeping...");
     int count=0;
+    wakeupFlag = 1;
     while(ros::ok())
     {
         // ROS_INFO("%d",wakeupFlag);
@@ -167,7 +169,7 @@ int main(int argc, char* argv[])
         if (wakeupFlag){
             ROS_INFO("Wakeup...");
             int ret = MSP_SUCCESS;
-            std::string login_params = "appid = 5e0e18ce, work_dir = " + rospackage_path + "data/";
+            std::string login_params = "appid = " + appid + ", work_dir = " + rospackage_path + "data/";
             
             const char* session_begin_params =
                 "sub = iat, domain = iat, language = zh_cn, "
@@ -181,22 +183,23 @@ int main(int argc, char* argv[])
             }
  
             printf("Demo recognizing the speech from microphone\n");
-            printf("Speak in 10 seconds\n");
+            printf("Speak in 5 seconds\n");
  
             demo_mic(session_begin_params);
  
-            printf("10 sec passed\n");
+            printf("5 sec passed\n");
         
-            wakeupFlag=0;
+            wakeupFlag=1;
             MSPLogout();
         }
- 
+
         // 语音识别完成
         if(resultFlag){
             resultFlag=0;
             std_msgs::String msg;
-            msg.data = g_result;
-            std::cout << "I heard: " <<  g_result << std::endl;
+            std::string voice_msg(g_result);
+            msg.data = voice_msg;
+            std::cout << "I heard: " <<  voice_msg << std::endl;
             voiceWordsPub.publish(msg);
         }
  

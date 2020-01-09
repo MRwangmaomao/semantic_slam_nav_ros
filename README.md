@@ -1,7 +1,7 @@
 <!--
  * @Author: 王培荣
  * @Date: 2019-12-31 15:21:52
- * @LastEditTime : 2020-01-09 16:01:22
+ * @LastEditTime : 2020-01-09 23:57:19
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/README.md
@@ -43,14 +43,14 @@ TODO：
 
 - realsense D435,D400相机
 
-### 1. 添加Vocabulary
+### (1) 添加Vocabulary
 在ros包的下新建Vocabulary文件夹，添加ORBvoc.txt词典。
 ```
 mkdir Vocabulary
 add ORBvoc.txt
 ```
 
-### 2. 安装腾讯ncnn库
+### (2) 安装腾讯ncnn库
 ```
 cd Thirdparty/ncnn
 mkdir build&&cd build
@@ -60,7 +60,7 @@ sudo make install
 sudo cp Thirdparty/ncnn/build/install/lib/libncnn.a /usr/lib
 ```
 
-### 3 其他库
+### (3) 其他库
 
 vtk 5
 
@@ -74,7 +74,7 @@ Eigen
 
 octomap
 
-### 4 安装科大讯飞语音相关库
+### (4) 安装科大讯飞语音相关库
 - step1 在科大讯飞注册账户，修改speech/src中appid参数
 - step2 安装相关库
 ```
@@ -84,7 +84,7 @@ sudo apt-get install mplayer #mplayer工具
 - step3 在科大讯飞官网下载SDK，在fileroot/libs/x64中将libmsc.so文件复制到/usr/local/lib中
 
 
-### 5 安装百度aip相关库
+### (5) 安装百度aip相关库
 ```
 sudo apt-get install ros-kinetic-image-view
 sudo apt-get install libjsoncpp-dev
@@ -94,7 +94,7 @@ sudo apt-get install curl
 
 修改aip-cpp/src中的appid,AK,SK
 
-### 6 开始下载源码进行编译
+### (6) 开始下载源码进行编译
 ```
 mkdir -p catkin_ws/src
 git clone git@github.com:MRwangmaomao/semantic_slam_nav_ros.git
@@ -102,15 +102,15 @@ cd ..
 catkin_make
 ```
 
-### 7 修改config文件夹下的setting.yaml文件和相机的yaml文件
+### (7) 修改config文件夹下的setting.yaml文件和对应的相机的配置文件、DWA配置文件
 
 [配置文件说明](config/README.md)
 
-修改rospackage_path，设置为自己对应存储的路径。
+修改所有的rospackage_path参数，设置为自己对应存储的路径。
 
 修改color_img_topic和depth_img_topic
 
-### 8 相关公开数据集下载
+### (8) 相关公开数据集下载
 
 [OpenLORIS-Scene Dataset](https://lifelong-robotic-vision.github.io/dataset/scene)
 
@@ -123,7 +123,7 @@ catkin_make
 # 语义地图
 
 ```
-roslaunch slam_semantic_nav_ros ORB_Sematic_Nav.launch
+roslaunch slam_semantic_nav_ros ORB_Semantic_Nav.launch
 ```
 ![merge-map](image/ssd_map1.png)
 

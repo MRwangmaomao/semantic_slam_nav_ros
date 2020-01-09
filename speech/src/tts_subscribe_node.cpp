@@ -1,7 +1,7 @@
 /*
- * @Author: your name
+ * @Author: 王培荣
  * @Date: 2020-01-03 00:42:22
- * @LastEditTime : 2020-01-03 21:28:12
+ * @LastEditTime : 2020-01-09 23:49:56
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/src/tts_subscrib.cpp
@@ -16,12 +16,13 @@
 #include <unistd.h>
 #include <ros/ros.h>
 #include <std_msgs/String.h>
-
+#include <opencv2/core/core.hpp>
 #include "include/qtts.h"
 #include "include/msp_cmn.h"
 #include "include/msp_errors.h"
 
-
+std::string appid = "5e0e18ce";
+std::string rospackage_path;
 
 /* wav音频头部格式 */
 typedef struct _wave_pcm_hdr
@@ -154,26 +155,46 @@ void voiceWordsCallback(const std_msgs::String::ConstPtr& msg)
     const char* text;
     int         ret                  = MSP_SUCCESS;
     const char* session_begin_params = "voice_name = xiaoyan, text_encoding = utf8, sample_rate = 16000, speed = 50, volume = 50, pitch = 50, rdn = 2";
-    const char* filename             = "/home/wpr/code/catkin_ws/src/orbslam_semantic_nav_ros/data/tts_sample.wav"; //合成的语音文件名称
+    std::string filename             = rospackage_path + "data/tts_sample.wav"; //合成的语音文件名称
  
- 
+	
+
     std::cout<<"I heard :"<<msg->data.c_str()<<std::endl;
     text = msg->data.c_str(); 
  
     /* 文本合成 */
     printf("开始合成 ...\n");
-    ret = text_to_speech(text, filename, session_begin_params);
+    ret = text_to_speech(text, filename.c_str(), session_begin_params);
     if (MSP_SUCCESS != ret)
     {
         printf("text_to_speech failed, error code: %d.\n", ret);
     }
     printf("合成完毕\n");
-	system("mplayer /home/wpr/code/catkin_ws/src/orbslam_semantic_nav_ros/data/tts_sample.wav");
+	std::string player = "mplayer " + rospackage_path + "data/tts_sample.wav";
+	system(player.c_str());
 }
  
 int main(int argc, char** argv){
-    int ret = MSP_SUCCESS;
-    const char* login_params = "appid = 5e0e18ce, work_dir =/home/wpr/code/catkin_ws/src/orbslam_semantic_nav_ros/data/";//登录参数,appid与msc库绑定,请勿随意改动
+    int ret = MSP_SUCCESS; 
+	 
+    cv::FileStorage fsSettings(argv[1], cv::FileStorage::READ);
+    if(!fsSettings.isOpened()){
+        std::cerr << std::endl <<
+            std::endl << 
+            "---------------------------------------------" << std::endl << 
+            "---------------------------------------------" << std::endl << 
+            "您的文件路径设置错误了，请在roslaunch中修改配置文件的路径！！！" << std::endl <<
+            std::endl <<
+            std::endl <<
+            "祝您实验取得成功。" << std::endl << 
+            "---------------------------------------------" << std::endl << 
+            "---------------------------------------------" << std::endl;
+            exit(1);
+    }
+	fsSettings["rospackage_path"] >> rospackage_path;
+	fsSettings["iflytek_appid"] >> appid;
+    std::string login_params = "appid = "+ appid + ", work_dir =" + rospackage_path + "data/";//登录参数,appid与msc库绑定,请勿随意改动
+	
     /*
     * rdn:           合成音频数字发音方式
     * volume:        合成音频的音量
@@ -187,7 +208,7 @@ int main(int argc, char** argv){
     */
  
     /* 用户登录 */
-    ret = MSPLogin(NULL, NULL, login_params);//第一个参数是用户名，第二个参数是密码，第三个参数是登录参数，用户名和密码可在http://open.voicecloud.cn注册获取
+    ret = MSPLogin(NULL, NULL, login_params.c_str());//第一个参数是用户名，第二个参数是密码，第三个参数是登录参数，用户名和密码可在http://open.voicecloud.cn注册获取
     if (MSP_SUCCESS != ret)
     {
         printf("MSPLogin failed, error code: %d.\n", ret);

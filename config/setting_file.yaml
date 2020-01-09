@@ -17,6 +17,8 @@ publish_pointcloud_param: 0 # 是否发送点云,在rviz可视化
 publish_pose_param: 0 # 发送相机位姿，在rviz可视化，用于导航等
 min_observations_per_point: 2
 
+iflytek_appid: “5e0e18ce”
+
 # ----------------------------------------------------------------------------
 
 # # realsensed435
@@ -33,6 +35,7 @@ min_observations_per_point: 2
 # publish_pointcloud_param: 0
 # publish_pose_param: 1
 # min_observations_per_point: 2
+#iflytek_appid: “5e0e18ce”
 
 # ----------------------------------------------------------------------------
 
@@ -51,3 +54,4 @@ min_observations_per_point: 2
 # publish_pointcloud_param: 1
 # publish_pose_param: 1
 # min_observations_per_point: 2
+# iflytek_appid: “5e0e18ce”
