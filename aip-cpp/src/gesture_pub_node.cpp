@@ -1,7 +1,7 @@
 /*
  * @Author: 王培荣
  * @Date: 2020-01-03 15:30:25
- * @LastEditTime : 2020-01-04 01:12:37
+ * @LastEditTime : 2020-01-09 15:31:50
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/aip-cpp/src/gesture_pub_node.cpp
@@ -21,7 +21,12 @@
 ros::Subscriber sub_img;
 ros::Publisher pub_voice;
 std::string rospackage_path;
-aip::Bodyanalysis client("18165604", "EXXFhKHgb8uAGvo2yu9qAf4g", "KTxGCvBRK6yvSAN1DHOh24Cl1Wk3G0jU");
+
+std::string appid = "18165604";
+std::string AK = "EXXFhKHgb8uAGvo2yu9qAf4g";
+std::string SK = "KTxGCvBRK6yvSAN1DHOh24Cl1Wk3G0jU";
+
+aip::Bodyanalysis client(appid, AK, SK);
 
 
 void img_callback(const sensor_msgs::ImageConstPtr &msgRGB)

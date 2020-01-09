@@ -1,7 +1,7 @@
 /*
  * @Author: 王培荣
  * @Date: 2020-01-03 15:30:25
- * @LastEditTime : 2020-01-04 00:55:14
+ * @LastEditTime : 2020-01-09 15:32:49
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/aip-cpp/src/face_pub_node.cpp
@@ -19,8 +19,13 @@
 #include "base/base.h"
 #include "face.h"
 
+std::string appid = "18166213";
+std::string AK = "HVV12BIfUj6IEegBfC9KrRZK";
+std::string SK = "azRZb0yDtaCdVtG1BF6zmYADAV3nRytX";
+
 ros::Subscriber sub_img;
-aip::Face client("18166213", "HVV12BIfUj6IEegBfC9KrRZK", "azRZb0yDtaCdVtG1BF6zmYADAV3nRytX");
+aip::Face client(appid, AK, SK);
+
 std::string rospackage_path;
 
 

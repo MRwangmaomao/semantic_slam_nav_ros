@@ -1,7 +1,7 @@
 <!--
  * @Author: 王培荣
  * @Date: 2019-12-31 15:21:52
- * @LastEditTime : 2020-01-08 23:57:36
+ * @LastEditTime : 2020-01-09 14:57:16
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/README.md
@@ -24,6 +24,7 @@ TODO：
 ---
 
 演示2：
+
 [![Watch the video](image/cover2.png)](https://www.bilibili.com/video/av81398597)
 
 ---
@@ -148,7 +149,11 @@ roslaunch slam_semantic_nav_ros gesture_speak.launch
 ```
 
 # 参考
+
 [ORBSLAM](https://github.com/raulmur/ORB_SLAM2)
+
 [ORB_SLAM2_SSD_Semantic](https://github.com/Ewenwan/ORB_SLAM2_SSD_Semantic)
+
 [百度AI开放平台](https://ai.baidu.com/)
+
 [科大讯飞语音](https://www.xfyun.cn/)

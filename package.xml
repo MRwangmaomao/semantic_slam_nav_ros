@@ -51,8 +51,7 @@
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>rospy</build_depend>
-  <build_depend>message_generation</build_depend>
-  <!-- <build_depend>costmap_lrgbd_ros</build_depend> -->
+  <build_depend>message_generation</build_depend> 
   <build_depend>message_filters</build_depend>
   <build_depend>image_transport</build_depend>
   <build_depend>tf</build_depend>
@@ -64,8 +63,7 @@
   <build_export_depend>message_filters</build_export_depend>
   <build_export_depend>image_transport</build_export_depend>
   <build_export_depend>tf</build_export_depend>
-  <build_export_depend>geometry_msgs</build_export_depend>
-  <!-- <build_export_depend>costmap_lrgbd_ros</build_export_depend> -->
+  <build_export_depend>geometry_msgs</build_export_depend> 
 
   <exec_depend>roscpp</exec_depend>
   <exec_depend>rospy</exec_depend>
@@ -73,8 +71,7 @@
   <exec_depend>message_filters</exec_depend>
   <exec_depend>image_transport</exec_depend>
   <exec_depend>tf</exec_depend>
-  <exec_depend>geometry_msgs</exec_depend>
-  <!-- <exec_depend>costmap_lrgbd_ros</exec_depend> -->
+  <exec_depend>geometry_msgs</exec_depend> 
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

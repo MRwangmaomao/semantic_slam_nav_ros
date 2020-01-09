@@ -218,8 +218,7 @@ int main(int argc, char **argv){
     double map_width = fsSettings["map_width"];
     double map_height = fsSettings["map_height"];
     double robot_radius = fsSettings["robot_radius"];
-    
-    // bool display_costmap = fsSettings["display_costmap"];
+     
     bool display_costmap = false;
     
     cv::Mat T_lidar2base, Tdepth2base;
