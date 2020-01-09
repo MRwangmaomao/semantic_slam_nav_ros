@@ -1,7 +1,7 @@
 <!--
  * @Author: 王培荣
  * @Date: 2019-12-31 15:21:52
- * @LastEditTime : 2020-01-06 00:15:51
+ * @LastEditTime : 2020-01-08 23:57:36
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/README.md
@@ -9,14 +9,12 @@
 # orbslam_semantic_nav_ros
 
 TODO：
+ 
+1. 加入手势的ros message
 
-1. 重定位的地图加载失败问题
+2. 常用语音对话与语音唤醒功能
 
-2. 加入手势的ros message
-
-3. 常用语音对话与语音唤醒功能
-
-4. 待定
+3. 待定
 
 ---
 演示1：
@@ -149,3 +147,8 @@ roslaunch slam_semantic_nav_ros gesture_speak.launch
 roslaunch slam_semantic_nav_ros gesture_speak.launch
 ```
 
+# 参考
+[ORBSLAM](https://github.com/raulmur/ORB_SLAM2)
+[ORB_SLAM2_SSD_Semantic](https://github.com/Ewenwan/ORB_SLAM2_SSD_Semantic)
+[百度AI开放平台](https://ai.baidu.com/)
+[科大讯飞语音](https://www.xfyun.cn/)

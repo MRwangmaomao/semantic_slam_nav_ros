@@ -21,11 +21,13 @@
 #include <geometry_msgs/Twist.h>
 #include <nav_msgs/Odometry.h>
 #include <sensor_msgs/PointCloud.h>
+#include <std_msgs/Bool.h>
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
 #include "costmap_lrgbd_ros/lrgbd2xz.h"
 #include "costmap_lrgbd_ros/dwa_planning.h"
-#include "costmap_lrgbd_ros/Arrived.h"
+
+// #include "costmap_lrgbd_ros/Arrived.h"
 
 #define RAD2DEG(x) ((x)*180./M_PI) 
 
@@ -57,7 +59,7 @@ void img_callback(const sensor_msgs::ImageConstPtr &depth)
     {
         double go_v = 0.0, turn_v = 0.0;
         geometry_msgs::Twist pub_speed;
-        costmap_lrgbd_ros::Arrived pub_arrived;
+        std_msgs::Bool pub_arrived;
         cv_bridge::CvImagePtr cv_image = cv_bridge::toCvCopy(depth);
         lrgbd_tmap.depthCameraToCostMap(cv_image->image);
         if(dwa_planer.move(robot_pose_id, robot_pose, lrgbd_tmap.config_map_, go_v, turn_v)){
@@ -65,7 +67,7 @@ void img_callback(const sensor_msgs::ImageConstPtr &depth)
             pub_speed.angular.z = 0;
             // ROS_INFO_STREAM("go_v: " << go_v <<"    turn_v: " << turn_v);
             speed_pub.publish(pub_speed);
-            pub_arrived.is_arrived = 1;
+            pub_arrived.data = 1;
             isArrived_pub.publish(pub_arrived);
             ros::shutdown();
             return;
@@ -236,7 +238,7 @@ int main(int argc, char **argv){
     ros::Subscriber sub_laser = nh.subscribe(lidar_topic, 100, lidar_callback);
     ros::Subscriber sub_robot_pose = nh.subscribe(robot_pose_topic, 100, robot_pose_callback);
     speed_pub = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 10);
-    isArrived_pub = nh.advertise<costmap_lrgbd_ros::Arrived>("/isArrived", 10);
+    isArrived_pub = nh.advertise<std_msgs::Bool>("/isArrived", 10);
     all_marker_pub = nh.advertise<visualization_msgs::MarkerArray>("/WayPoints",10);
     dest_marker_pub = nh.advertise<visualization_msgs::Marker>("/DestWayPoint",10);
 

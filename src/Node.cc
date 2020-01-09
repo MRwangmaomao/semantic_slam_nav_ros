@@ -1,7 +1,7 @@
 /*
  * @Author: 王培荣
  * @Date: 2019-12-29 11:15:26
- * @LastEditTime : 2020-01-06 16:51:58
+ * @LastEditTime : 2020-01-09 14:52:53
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/src/RGBDNode.cpp
@@ -101,8 +101,8 @@ Node::~Node () {
 
 }
 
-void Node::isArrivedCallback(const orbslam_semantic_nav_ros::Arrived::ConstPtr arrived_msg){
-  if(arrived_msg->is_arrived == 1){
+void Node::isArrivedCallback(const std_msgs::Bool::ConstPtr arrived_msg){
+  if(arrived_msg->data == 1){
     orb_slam_->Shutdown(); // 关闭系统
     // // Save camera trajectory
     orb_slam_->SaveTrajectoryTUM("CameraTrajectory.txt");

@@ -1,7 +1,7 @@
 /*
  * @Author: 王培荣
  * @Date: 2019-12-29 11:18:52
- * @LastEditTime : 2019-12-31 15:56:37
+ * @LastEditTime : 2020-01-09 14:52:14
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/include/Node.h
@@ -19,7 +19,7 @@
 #include <tf/transform_broadcaster.h>
 #include <cv_bridge/cv_bridge.h>
 #include <opencv2/core/core.hpp>
-
+#include <std_msgs/Bool.h>
 // #include <dynamic_reconfigure/server.h>
 // #include <orb_slam2_ros/dynamic_reconfigureConfig.h>
 
@@ -33,7 +33,8 @@
 #include <geometry_msgs/PoseStamped.h>
 
 #include <System.h> // ORBSLAM 头文件
-#include "orbslam_semantic_nav_ros/Arrived.h" 
+// #include "slam_semantic_nav_ros/Arrived.h" 
+
 // #include "costmap_lrgbd_ros/Arrived.h"
 
 
@@ -59,7 +60,7 @@ class Node
     void PublishPositionAsPoseStamped(cv::Mat position);
     void PublishRenderedImage (cv::Mat image);
     // void isArrivedCallback(const costmap_lrgbd_ros::Arrived::ConstPtr arrived_msg);
-    void isArrivedCallback(const orbslam_semantic_nav_ros::Arrived::ConstPtr arrived_msg);
+    void isArrivedCallback(const std_msgs::Bool::ConstPtr arrived_msg);
     // void ParamsChangedCallback(orb_slam2_ros::dynamic_reconfigureConfig &config, uint32_t level);
     // bool SaveMapSrv (orb_slam2_ros::SaveMap::Request &req, orb_slam2_ros::SaveMap::Response &res);
 

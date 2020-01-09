@@ -1,7 +1,7 @@
 /*
  * @Author: 王培荣
  * @Date: 2019-12-29 11:15:10
- * @LastEditTime : 2019-12-31 14:19:13
+ * @LastEditTime : 2020-01-08 22:19:14
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/include/RGBDNode.h
@@ -23,6 +23,7 @@
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/image_encodings.h>
 #include <opencv2/core/core.hpp>
+#include <opencv2/calib3d/calib3d.hpp>
 #include <tf/transform_broadcaster.h>
 
 #include <System.h>
@@ -35,7 +36,7 @@ class RGBDNode : public Node
     RGBDNode (ros::NodeHandle &node_handle, std::string config_file_path);
     ~RGBDNode ();
     void ImageCallback (const sensor_msgs::ImageConstPtr& msgRGB,const sensor_msgs::ImageConstPtr& msgD);
-
+    
   private:
     typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Image, sensor_msgs::Image> sync_pol;
     message_filters::Subscriber<sensor_msgs::Image> *rgb_subscriber_;
