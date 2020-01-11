@@ -23,9 +23,9 @@ baidu_gesture_appid: "18165604" # 需要用户修改为自己的百度AI平台id
 baidu_gesture_AK: "EXXFhKHgb8uAGvo2yu9qAf4g"
 baidu_gesture_SK: "KTxGCvBRK6yvSAN1DHOh24Cl1Wk3G0jU"
 
-baidu_face_appid: "18166213";
-baidu_face_AK: "HVV12BIfUj6IEegBfC9KrRZK";
-baidu_face_SK: "azRZb0yDtaCdVtG1BF6zmYADAV3nRytX";
+baidu_face_appid: "18166213"
+baidu_face_AK: "HVV12BIfUj6IEegBfC9KrRZK"
+baidu_face_SK: "azRZb0yDtaCdVtG1BF6zmYADAV3nRytX"
 
 # ----------------------------------------------------------------------------
 

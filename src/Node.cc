@@ -1,7 +1,7 @@
 /*
  * @Author: 王培荣
  * @Date: 2019-12-29 11:15:26
- * @LastEditTime : 2020-01-11 22:55:48
+ * @LastEditTime : 2020-01-11 23:17:55
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/src/RGBDNode.cpp
@@ -127,7 +127,7 @@ bool Node::Update(ros::Time current_stamp) {
     orb_slam_->GetAllPoses(result_vector);
     nav_msgs::Path result_path;
     result_path.header.stamp = current_stamp;
-    result_path.header.frame_id = "world";
+    result_path.header.frame_id = "map";
     Eigen::Matrix4d temp_matrix, temp_matrix_inverse;
     Eigen::Matrix4d trans_form = Eigen::Matrix4d::Identity();
     // trans_form << 0,0,1,0, -1,0,0,0, 0,-1,0,0, 0,0,0,1;
@@ -180,46 +180,76 @@ bool Node::Update(ros::Time current_stamp) {
                reference_stamp,
                current_stamp);
 
-  // if (!position.empty()) {
-  //   PublishPositionAsTransform (position); // 发布TF
 
-  //   if (publish_pose_param_) {
-  //     PublishPositionAsPoseStamped (position);  // 发布位姿
-  //   }
-  // }
+       // get keyframe decision
+    LastKeyframeDecision_ = orb_slam_->GetKeyframeDecision();
+    if (LastKeyframeDecision_)
+        printf("this is keyframe.\n");
 
-  // // PublishRenderedImage (orb_slam_->DrawCurrentFrame()); // 发布当前帧的图像（带特征点）
+    nav_msgs::Odometry this_odometry;
+    this_odometry.header.stamp = current_stamp;
+    this_odometry.header.frame_id = "map";
+    Eigen::Matrix4d T_cw, T_wc;
+    for (int row_i = 0; row_i < 4; row_i++)
+        for (int col_i = 0; col_i < 4; col_i++)
+            T_cw(row_i, col_i) = track_result.at<float>(row_i, col_i);
+    T_wc = T_cw.inverse();
+    Eigen::Quaterniond rotation_q(T_wc.block<3, 3>(0, 0));
+    this_odometry.pose.pose.position.x = T_wc(0, 3);
+    this_odometry.pose.pose.position.y = T_wc(1, 3);
+    this_odometry.pose.pose.position.z = T_wc(2, 3);
+    this_odometry.pose.pose.orientation.x = rotation_q.x();
+    this_odometry.pose.pose.orientation.y = rotation_q.y();
+    this_odometry.pose.pose.orientation.z = rotation_q.z();
+    this_odometry.pose.pose.orientation.w = rotation_q.w();
+    if (LastKeyframeDecision_)
+        this_odometry.pose.covariance[0] = 1;
+    else
+        this_odometry.pose.covariance[0] = 0;
+    this_odometry.pose.covariance[1] = reference_index;
+    pose_publish_.publish(this_odometry);
 
-  // if (publish_pointcloud_param_) {
-  //   PublishMapPoints (orb_slam_->GetTrackedMapPoints()); // 发布地图点云
-  // }
+    // get loop index
+    sensor_msgs::PointCloud ros_loop_info;
+    ros_loop_info.header.stamp = current_stamp;
+    ros_loop_info.header.frame_id = "map";
+    std::vector<std::pair<double, double>> loop_result;
+    orb_slam_->GetLoopInfo(loop_result);
+    sensor_msgs::ChannelFloat32 loop_channel;
+    for (int i = 0; i < loop_result.size() && i < 35; i++)
+    {
+        int first_index = -1;
+        int second_index = -1;
+        for (int j = 0; j < result_vector.size(); j++)
+        {
+            if (result_vector[j].second == loop_result[i].first)
+                first_index = j;
+            if (result_vector[j].second == loop_result[i].second)
+                second_index = j;
+        }
+        if (first_index > 0 && second_index > 0)
+        {
+            printf("the loop info %d <---> %d\n", first_index, second_index);
+            loop_channel.values.push_back(first_index);
+            loop_channel.values.push_back(second_index);
+        }
+        else
+            printf("cannot find corresponding!\n");
+    }
+    ros_loop_info.channels.push_back(loop_channel);
+    loop_publish_.publish(ros_loop_info);
+ 
   return close_system_;
 }
+
+
+
+
 
 
 void Node::PublishMapPoints (std::vector<ORB_SLAM2::MapPoint*> map_points) {
   // sensor_msgs::PointCloud2 cloud = MapPointsToPointCloud (map_points); // 将map point转为pointcloud2格式
   // map_points_publisher_.publish (cloud); // 发布点云
-}
-
-/**
- * @brief 发布camera在map中的tf
- * 
- * @param position 
- */
-void Node::PublishPositionAsTransform (cv::Mat position) {
-  tf::Transform transform = TransformFromMat (position);
-  static tf::TransformBroadcaster tf_broadcaster;
-  tf_broadcaster.sendTransform(tf::StampedTransform(transform, current_frame_time_, map_frame_id_param_, camera_frame_id_param_));
-}
-
-// 将Mat转为pseStamped并发布 
-void Node::PublishPositionAsPoseStamped (cv::Mat position) {
-  tf::Transform grasp_tf = TransformFromMat (position);
-  tf::Stamped<tf::Pose> grasp_tf_pose(grasp_tf, current_frame_time_, map_frame_id_param_);
-  geometry_msgs::PoseStamped pose_msg;
-  tf::poseStampedTFToMsg (grasp_tf_pose, pose_msg); 
-  pose_publisher_.publish(pose_msg);
 }
 
 /**
@@ -235,97 +265,119 @@ void Node::PublishRenderedImage (cv::Mat image) {
   rendered_image_publisher_.publish(rendered_image_msg);
 }
 
-/**
- * @brief 将ORBSLAM中的cv::Mat转为tf::Transform
- * 
- * @param position_mat 
- * @return tf::Transform 
- */
-tf::Transform Node::TransformFromMat (cv::Mat position_mat) {
-  cv::Mat rotation(3,3,CV_32F);
-  cv::Mat translation(3,1,CV_32F);
+// /**
+//  * @brief 发布camera在map中的tf
+//  * 
+//  * @param position 
+//  */
+// void Node::PublishPositionAsTransform (cv::Mat position) {
+//   tf::Transform transform = TransformFromMat (position);
+//   static tf::TransformBroadcaster tf_broadcaster;
+//   tf_broadcaster.sendTransform(tf::StampedTransform(transform, current_frame_time_, map_frame_id_param_, camera_frame_id_param_));
+// }
 
-  rotation = position_mat.rowRange(0,3).colRange(0,3);
-  translation = position_mat.rowRange(0,3).col(3);
+// // 将Mat转为pseStamped并发布 
+// void Node::PublishPositionAsPoseStamped (cv::Mat position) {
+//   tf::Transform grasp_tf = TransformFromMat (position);
+//   tf::Stamped<tf::Pose> grasp_tf_pose(grasp_tf, current_frame_time_, map_frame_id_param_);
+//   geometry_msgs::PoseStamped pose_msg;
+//   tf::poseStampedTFToMsg (grasp_tf_pose, pose_msg); 
+//   pose_publisher_.publish(pose_msg);
+// }
 
-  tf::Matrix3x3 tf_camera_rotation (rotation.at<float> (0,0), rotation.at<float> (0,1), rotation.at<float> (0,2),
-                                    rotation.at<float> (1,0), rotation.at<float> (1,1), rotation.at<float> (1,2),
-                                    rotation.at<float> (2,0), rotation.at<float> (2,1), rotation.at<float> (2,2)
-                                   );
 
-  tf::Vector3 tf_camera_translation (translation.at<float> (0), translation.at<float> (1), translation.at<float> (2));
 
-  //Coordinate transformation matrix from orb coordinate system to ros coordinate system
-  const tf::Matrix3x3 tf_orb_to_ros (0, 0, 1,
-                                    -1, 0, 0,
-                                     0,-1, 0);
+// /**
+//  * @brief 将ORBSLAM中的cv::Mat转为tf::Transform
+//  * 
+//  * @param position_mat 
+//  * @return tf::Transform 
+//  */
+// tf::Transform Node::TransformFromMat (cv::Mat position_mat) {
+//   cv::Mat rotation(3,3,CV_32F);
+//   cv::Mat translation(3,1,CV_32F);
 
-  //Transform from orb coordinate system to ros coordinate system on camera coordinates
-  tf_camera_rotation = tf_orb_to_ros*tf_camera_rotation;
-  tf_camera_translation = tf_orb_to_ros*tf_camera_translation;
+//   rotation = position_mat.rowRange(0,3).colRange(0,3);
+//   translation = position_mat.rowRange(0,3).col(3);
 
-  //Inverse matrix
-  tf_camera_rotation = tf_camera_rotation.transpose();
-  tf_camera_translation = -(tf_camera_rotation*tf_camera_translation);
+//   tf::Matrix3x3 tf_camera_rotation (rotation.at<float> (0,0), rotation.at<float> (0,1), rotation.at<float> (0,2),
+//                                     rotation.at<float> (1,0), rotation.at<float> (1,1), rotation.at<float> (1,2),
+//                                     rotation.at<float> (2,0), rotation.at<float> (2,1), rotation.at<float> (2,2)
+//                                    );
 
-  //Transform from orb coordinate system to ros coordinate system on map coordinates
-  tf_camera_rotation = tf_orb_to_ros*tf_camera_rotation;
-  tf_camera_translation = tf_orb_to_ros*tf_camera_translation;
+//   tf::Vector3 tf_camera_translation (translation.at<float> (0), translation.at<float> (1), translation.at<float> (2));
 
-  return tf::Transform (tf_camera_rotation, tf_camera_translation);
-}
+//   //Coordinate transformation matrix from orb coordinate system to ros coordinate system
+//   const tf::Matrix3x3 tf_orb_to_ros (0, 0, 1,
+//                                     -1, 0, 0,
+//                                      0,-1, 0);
 
-/**
- * @brief ORB_SLAM地图点云转为PointCloud2点云
- * 
- * @param map_points 
- * @return sensor_msgs::PointCloud2 
- */
-sensor_msgs::PointCloud2 Node::MapPointsToPointCloud (std::vector<ORB_SLAM2::MapPoint*> map_points) {
-  if (map_points.size() == 0) {
-    std::cout << "Map point vector is empty!" << std::endl;
-  }
+//   //Transform from orb coordinate system to ros coordinate system on camera coordinates
+//   tf_camera_rotation = tf_orb_to_ros*tf_camera_rotation;
+//   tf_camera_translation = tf_orb_to_ros*tf_camera_translation;
 
-  sensor_msgs::PointCloud2 cloud;
+//   //Inverse matrix
+//   tf_camera_rotation = tf_camera_rotation.transpose();
+//   tf_camera_translation = -(tf_camera_rotation*tf_camera_translation);
 
-  const int num_channels = 3; // x y z
+//   //Transform from orb coordinate system to ros coordinate system on map coordinates
+//   tf_camera_rotation = tf_orb_to_ros*tf_camera_rotation;
+//   tf_camera_translation = tf_orb_to_ros*tf_camera_translation;
 
-  cloud.header.stamp = current_frame_time_;
-  cloud.header.frame_id = map_frame_id_param_;
-  cloud.height = 1; // 默认高度为1
-  cloud.width = map_points.size();
-  cloud.is_bigendian = false;
-  cloud.is_dense = true;
-  cloud.point_step = num_channels * sizeof(float);
-  cloud.row_step = cloud.point_step * cloud.width;
-  cloud.fields.resize(num_channels);
+//   return tf::Transform (tf_camera_rotation, tf_camera_translation);
+// }
 
-  std::string channel_id[] = { "x", "y", "z"};
-  for (int i = 0; i<num_channels; i++) {
-  	cloud.fields[i].name = channel_id[i];
-  	cloud.fields[i].offset = i * sizeof(float);
-  	cloud.fields[i].count = 1;
-  	cloud.fields[i].datatype = sensor_msgs::PointField::FLOAT32;
-  }
+// /**
+//  * @brief ORB_SLAM地图点云转为PointCloud2点云
+//  * 
+//  * @param map_points 
+//  * @return sensor_msgs::PointCloud2 
+//  */
+// sensor_msgs::PointCloud2 Node::MapPointsToPointCloud (std::vector<ORB_SLAM2::MapPoint*> map_points) {
+//   if (map_points.size() == 0) {
+//     std::cout << "Map point vector is empty!" << std::endl;
+//   }
 
-  cloud.data.resize(cloud.row_step * cloud.height);
+//   sensor_msgs::PointCloud2 cloud;
 
-	unsigned char *cloud_data_ptr = &(cloud.data[0]);
+//   const int num_channels = 3; // x y z
 
-  float data_array[num_channels];
-  for(unsigned int i=0; i<cloud.width; i++) {
-    if (map_points.at(i)->nObs >= min_observations_per_point_) {
-      data_array[0] = map_points.at(i)->GetWorldPos().at<float> (2); //x. Do the transformation by just reading at the position of z instead of x
-      data_array[1] = -1.0* map_points.at(i)->GetWorldPos().at<float> (0); //y. Do the transformation by just reading at the position of x instead of y
-      data_array[2] = -1.0* map_points.at(i)->GetWorldPos().at<float> (1); //z. Do the transformation by just reading at the position of y instead of z
-      //TODO dont hack the transformation but have a central conversion function for MapPointsToPointCloud and TransformFromMat
+//   cloud.header.stamp = current_frame_time_;
+//   cloud.header.frame_id = map_frame_id_param_;
+//   cloud.height = 1; // 默认高度为1
+//   cloud.width = map_points.size();
+//   cloud.is_bigendian = false;
+//   cloud.is_dense = true;
+//   cloud.point_step = num_channels * sizeof(float);
+//   cloud.row_step = cloud.point_step * cloud.width;
+//   cloud.fields.resize(num_channels);
 
-      memcpy(cloud_data_ptr+(i*cloud.point_step), data_array, num_channels*sizeof(float));// 起始地址  内存地址  大小
-    }
-  }
+//   std::string channel_id[] = { "x", "y", "z"};
+//   for (int i = 0; i<num_channels; i++) {
+//   	cloud.fields[i].name = channel_id[i];
+//   	cloud.fields[i].offset = i * sizeof(float);
+//   	cloud.fields[i].count = 1;
+//   	cloud.fields[i].datatype = sensor_msgs::PointField::FLOAT32;
+//   }
 
-  return cloud;
-}
+//   cloud.data.resize(cloud.row_step * cloud.height);
+
+// 	unsigned char *cloud_data_ptr = &(cloud.data[0]);
+
+//   float data_array[num_channels];
+//   for(unsigned int i=0; i<cloud.width; i++) {
+//     if (map_points.at(i)->nObs >= min_observations_per_point_) {
+//       data_array[0] = map_points.at(i)->GetWorldPos().at<float> (2); //x. Do the transformation by just reading at the position of z instead of x
+//       data_array[1] = -1.0* map_points.at(i)->GetWorldPos().at<float> (0); //y. Do the transformation by just reading at the position of x instead of y
+//       data_array[2] = -1.0* map_points.at(i)->GetWorldPos().at<float> (1); //z. Do the transformation by just reading at the position of y instead of z
+//       //TODO dont hack the transformation but have a central conversion function for MapPointsToPointCloud and TransformFromMat
+
+//       memcpy(cloud_data_ptr+(i*cloud.point_step), data_array, num_channels*sizeof(float));// 起始地址  内存地址  大小
+//     }
+//   }
+
+//   return cloud;
+// }
 
 
 // void Node::ParamsChangedCallback(orb_slam2_ros::dynamic_reconfigureConfig &config, uint32_t level) {
