@@ -1,7 +1,7 @@
 /*
  * @Author: 王培荣
  * @Date: 2019-12-29 11:15:26
- * @LastEditTime : 2020-01-06 00:16:12
+ * @LastEditTime : 2020-01-11 22:25:19
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/src/RGBDNode.cpp
@@ -51,8 +51,7 @@ void RGBDNode::ImageCallback (const sensor_msgs::ImageConstPtr& msgRGB, const se
 
   orb_slam_->TrackRGBD(cv_ptrRGB->image,cv_ptrD->image,cv_ptrRGB->header.stamp.toSec());
 
-  if(Update()){
-    std::cout << "关闭ROS系统!" << std::endl;
- 
+  if(Update(cv_ptrRGB->header.stamp)){
+    std::cout << "关闭ROS系统!" << std::endl; 
   }
 }

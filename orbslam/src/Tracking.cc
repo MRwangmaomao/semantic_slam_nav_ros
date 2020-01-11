@@ -1081,16 +1081,19 @@ void Tracking::Track()
 // a. 有运动，则更新运动模型 Update motion model 运动速度 为前后两针的 变换矩阵
             if(!mLastFrame.mTcw.empty())
             {
-            cv::Mat LastTwc = cv::Mat::eye(4,4,CV_32F);
-            mLastFrame.GetRotationInverse().copyTo(LastTwc.rowRange(0,3).colRange(0,3));
-            mLastFrame.GetCameraCenter().copyTo(LastTwc.rowRange(0,3).col(3));
-            mVelocity = mCurrentFrame.mTcw*LastTwc;//运动速度 为前后两针的 变换矩阵
+                cv::Mat LastTwc = cv::Mat::eye(4,4,CV_32F);
+                mLastFrame.GetRotationInverse().copyTo(LastTwc.rowRange(0,3).colRange(0,3));
+                mLastFrame.GetCameraCenter().copyTo(LastTwc.rowRange(0,3).col(3));
+                mVelocity = mCurrentFrame.mTcw*LastTwc;//运动速度 为前后两针的 变换矩阵
             }
             else
                 mVelocity = cv::Mat();// 无速度
                     // 显示 当前相机位姿
-            if (mpMapDrawer != NULL) // =====new=====
+            if (mpMapDrawer != NULL){
                 mpMapDrawer->SetCurrentCameraPose(mCurrentFrame.mTcw);
+                // mpMapDrawer->SetReferenceKeyFrame(mpReferenceKF);
+            } // =====new=====
+            mpReferenceKF_stamp = mpReferenceKF->mTimeStamp;    
 
             // 还是 mpViewer 这里待确定====
 
@@ -1122,8 +1125,13 @@ void Tracking::Track()
 // d. 判断是否需要新建关键帧
             // 最后一步是确定是否将当前帧定为关键帧，由于在Local Mapping中，
             // 会剔除冗余关键帧，所以我们要尽快插入新的关键帧，这样才能更鲁棒。
-            if(NeedNewKeyFrame())
+            if(NeedNewKeyFrame()){
                 CreateNewKeyFrame();
+                set_new_keyframe = true;
+            }
+            else{
+                set_new_keyframe = false;
+            }
 
 // e. 外点清除 检查外点 标记(不符合 变换矩阵的 点 优化时更新)
             for(int i=0; i<mCurrentFrame.N;i++)

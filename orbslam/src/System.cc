@@ -298,8 +298,10 @@ cv::Mat System::TrackRGBD(const cv::Mat &im, const cv::Mat &depthmap, const doub
     mTrackingState = mpTracker->mState;
     mTrackedMapPoints = mpTracker->mCurrentFrame.mvpMapPoints;
     mTrackedKeyPointsUn = mpTracker->mCurrentFrame.mvKeysUn;
+    mcurrent_position_ = Tcw;
     return Tcw;
 }
+
 
 
 // 单目跟踪==============================================================================
@@ -603,6 +605,8 @@ void System::SaveOctomap(const char *filename) {
 }
 
 
+
+
 bool System::SetCallStackSize (const rlim_t kNewStackSize) {
     struct rlimit rlimit;
     int operation_result;
@@ -644,4 +648,138 @@ rlim_t System::GetCurrentCallStackSize () {
 }
  
 
-} //namespace ORB_SLAM
+}
+
+
+
+
+
+
+
+void System::GetLoopInfo(std::vector<std::pair<double, double>> &result_vector)
+{
+    const vector<KeyFrame *> vpKFs = mpMap->GetAllKeyFrames();
+    double max_stamp = -1;
+    int max_index = -1;
+    for (size_t i = 0; i < vpKFs.size(); i++)
+    {
+        if (vpKFs[i]->mTimeStamp > max_stamp)
+        {
+            max_index = i;
+            max_stamp = vpKFs[i]->mTimeStamp;
+        }
+    }
+    if(max_index < 0)
+    {
+        printf("GetLoopInfo did not the last!\n");
+        return;
+    }
+
+    vector<double> visited_stamps;
+    // Covisibility Graph
+    const vector<KeyFrame *> vCovKFs = vpKFs[max_index]->GetCovisiblesByWeight(100);
+    if (!vCovKFs.empty())
+    {
+        for (vector<KeyFrame *>::const_iterator vit = vCovKFs.begin(), vend = vCovKFs.end(); vit != vend; vit++)
+        {
+            if (std::find(visited_stamps.begin(), visited_stamps.end(), (*vit)->mTimeStamp) == visited_stamps.end())
+            {
+                result_vector.push_back(std::make_pair(vpKFs[max_index]->mTimeStamp, (*vit)->mTimeStamp));
+                visited_stamps.push_back((*vit)->mTimeStamp);
+            }
+        }
+    }
+
+    // Spanning tree
+    KeyFrame *pParent = vpKFs[max_index]->GetParent();
+    if (pParent)
+    {
+        if (std::find(visited_stamps.begin(), visited_stamps.end(), pParent->mTimeStamp) == visited_stamps.end())
+        {
+            result_vector.push_back(std::make_pair(vpKFs[max_index]->mTimeStamp, pParent->mTimeStamp));
+            visited_stamps.push_back(pParent->mTimeStamp);
+        }
+    }
+
+    // // Loops
+    // set<KeyFrame *> sLoopKFs = vpKFs[max_index]->GetLoopEdges();
+    // for (set<KeyFrame *>::iterator sit = sLoopKFs.begin(), send = sLoopKFs.end(); sit == send; sit++)
+    // {
+    //     if (std::find(visited_stamps.begin(), visited_stamps.end(), (*sit)->mTimeStamp) == visited_stamps.end())
+    //     {
+    //         result_vector.push_back(std::make_pair(vpKFs[max_index]->mTimeStamp, (*sit)->mTimeStamp));
+    //         visited_stamps.push_back((*sit)->mTimeStamp);
+    //     }
+    // }
+}
+
+
+
+void System::GetAllPoses(std::vector<std::pair<cv::Mat, double>> &result_vector)
+{
+    if (mSensor == MONOCULAR)
+    {
+        cerr << "ERROR: cannot get all poses using monocular." << endl;
+        return;
+    }
+
+    result_vector.clear();
+    vector<KeyFrame *> vpKFs = mpMap->GetAllKeyFrames();
+
+    int pose_num = 0;
+    for(size_t i=0; i<vpKFs.size(); i++)
+    {
+        KeyFrame *pKF = vpKFs[i];
+
+        cv::Mat Tcw = pKF->GetPose();
+
+        result_vector.push_back(std::make_pair(Tcw, pKF->mTimeStamp));
+        pose_num++;
+    }
+
+    std::sort(result_vector.begin(), result_vector.end(), [](
+        const std::pair<cv::Mat, double> &x, const std::pair<cv::Mat, double> &y)
+    {
+        return y.second > x.second;
+    });
+
+    // cv::Mat first_cRw = result_vector[0].first.inv();
+
+    for (int i = 0; i < result_vector.size(); i++)
+    {
+        // result_vector[i].first = result_vector[i].first * first_cRw;
+        result_vector[i].first = result_vector[i].first;
+    }
+}
+
+double System::GetRelativePose()
+{
+    return mpTracker->mpReferenceKF_stamp;
+}
+
+bool System::GetKeyframeDecision()
+{
+    return mpTracker->set_new_keyframe;
+}
+
+
+bool System::LocalMappingStopped()
+{
+    return mpLocalMapper->isStopped();
+}
+
+// cv::Mat System::GetCurrentPosition() {
+//   return mcurrent_position_;
+// }
+
+
+
+
+
+
+
+
+
+
+
+ //namespace ORB_SLAM

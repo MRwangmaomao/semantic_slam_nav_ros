@@ -138,7 +138,14 @@ public:
 	bool SetCallStackSize (const rlim_t kNewStackSize);
 	rlim_t GetCurrentCallStackSize ();
  
-
+	void GetLoopInfo(std::vector<std::pair<double, double>> &result_vector);
+	void GetAllPoses(std::vector<std::pair<cv::Mat, double>> &result_vector);
+	bool LocalMappingStopped();
+    double GetRelativePose();
+    bool GetKeyframeDecision();
+	
+    // cv::Mat GetCurrentPosition();
+	cv::Mat mcurrent_position_;
 private:
 
 	// Input sensor
@@ -207,6 +214,9 @@ private:
  	shared_ptr<PointCloudMapping> mpPointCloudMapping; // 点云地图类 共享指针 类成员变量
        shared_ptr< RunDetect > mpRunDetect;         // 目标检测运行线程
     };
+
+	// Current position
+    
 
 }// namespace ORB_SLAM
 

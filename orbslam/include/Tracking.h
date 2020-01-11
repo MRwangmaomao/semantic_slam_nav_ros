@@ -97,7 +97,10 @@ public:
 
     // Use this function if you have deactivated local mapping and you only want to localize the camera.
     void InformOnlyTracking(const bool &flag);// 仅仅定位模式，不建图
+ 
 
+    double mpReferenceKF_stamp;
+    bool set_new_keyframe;
 
 public:
 
