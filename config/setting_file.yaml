@@ -9,15 +9,23 @@ map_frame_id_param: "/map"
 camera_frame_id_param: "/camera_link"
 name_of_node: "/IM_robot"
 
-map_file_name_param: "config/map.bin" #
+map_file_name_param: "config/map.bin" # 保存的地图名称
 voc_file_name_param: "Vocabulary/ORBvoc.txt" 
-settings_file_name_param: "config/realsensed400.yaml" 
-load_map_param: 0 # 纯定位模式:1  或者建图和定位模式:0
+settings_file_name_param: "config/realsensed400.yaml" # 相机和ORBSLAM算法参数 需要用户根据相机型号修改
+load_map_param: 0 # 纯定位模式:1  或者建图和定位模式:0  在构建好地图并保存之后才可以设置为纯定位模式1
 publish_pointcloud_param: 0 # 是否发送点云,在rviz可视化
 publish_pose_param: 0 # 发送相机位姿，在rviz可视化，用于导航等
 min_observations_per_point: 2
 
-iflytek_appid: “5e0e18ce”
+iflytek_appid: “5e0e18ce” # 需要用户修改为自己的科大讯飞id
+
+baidu_gesture_appid: "18165604" # 需要用户修改为自己的百度AI平台id
+baidu_gesture_AK: "EXXFhKHgb8uAGvo2yu9qAf4g"
+baidu_gesture_SK: "KTxGCvBRK6yvSAN1DHOh24Cl1Wk3G0jU"
+
+baidu_face_appid: "18166213";
+baidu_face_AK: "HVV12BIfUj6IEegBfC9KrRZK";
+baidu_face_SK: "azRZb0yDtaCdVtG1BF6zmYADAV3nRytX";
 
 # ----------------------------------------------------------------------------
 

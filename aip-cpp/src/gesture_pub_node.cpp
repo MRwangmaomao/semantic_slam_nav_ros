@@ -1,7 +1,7 @@
 /*
  * @Author: 王培荣
  * @Date: 2020-01-03 15:30:25
- * @LastEditTime : 2020-01-09 15:56:40
+ * @LastEditTime : 2020-01-10 11:46:33
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/aip-cpp/src/gesture_pub_node.cpp
@@ -85,7 +85,7 @@ int main(int argc, char ** argv){
     if(argc != 2)
     {
         std::cerr << std::endl << "缺少参数" << std::endl << 
-        "Usage: rosrun slam_semantic_nav_ros face_pub_node" << std::endl;
+        "Usage: rosrun slam_semantic_nav_ros gesture_pub_node config_file_path" << std::endl;
         return 1;
     }
     cv::FileStorage fsSettings(argv[1], cv::FileStorage::READ);
@@ -103,6 +103,11 @@ int main(int argc, char ** argv){
             exit(1);
     }
     fsSettings["rospackage_path"] >> rospackage_path;
+
+    fsSettings["baidu_gesture_appid"] >> appid;
+    fsSettings["baidu_gesture_AK"] >> AK;
+    fsSettings["baidu_gesture_SK"] >> SK;
+
     sub_img = nh.subscribe("/usb_cam/image_raw", 1, img_callback);
     pub_voice = nh.advertise<std_msgs::String> ("/voiceWords", 1);
     pub_gesture = nh.advertise<slam_semantic_nav_ros::Gesture> ("/GestureSignal", 1);

@@ -1,7 +1,7 @@
 <!--
  * @Author: 王培荣
  * @Date: 2019-12-31 15:21:52
- * @LastEditTime : 2020-01-09 23:57:19
+ * @LastEditTime : 2020-01-10 11:39:18
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/README.md
@@ -44,13 +44,16 @@ TODO：
 - realsense D435,D400相机
 
 ### (1) 添加Vocabulary
+
 在ros包的下新建Vocabulary文件夹，添加ORBvoc.txt词典。
+
 ```
 mkdir Vocabulary
 add ORBvoc.txt
 ```
 
 ### (2) 安装腾讯ncnn库
+
 ```
 cd Thirdparty/ncnn
 mkdir build&&cd build
@@ -75,7 +78,7 @@ Eigen
 octomap
 
 ### (4) 安装科大讯飞语音相关库
-- step1 在科大讯飞注册账户，修改speech/src中appid参数
+- step1 在科大讯飞注册账户，修改setting_file.yaml中的appid参数
 - step2 安装相关库
 ```
 sudo apt-get install libasound2-dev #asound库
@@ -92,7 +95,7 @@ sudo apt-get install openssl
 sudo apt-get install curl
 ```
 
-修改aip-cpp/src中的appid,AK,SK
+修改setting_file.yaml中的中的百度appid,AK,SK
 
 ### (6) 开始下载源码进行编译
 ```

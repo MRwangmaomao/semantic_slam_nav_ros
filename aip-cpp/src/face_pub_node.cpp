@@ -1,7 +1,7 @@
 /*
  * @Author: 王培荣
  * @Date: 2020-01-03 15:30:25
- * @LastEditTime : 2020-01-09 15:32:49
+ * @LastEditTime : 2020-01-10 01:01:01
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/aip-cpp/src/face_pub_node.cpp
@@ -84,6 +84,10 @@ int main(int argc, char ** argv){
             exit(1);
     }
     fsSettings["rospackage_path"] >> rospackage_path;
+
+    fsSettings["baidu_face_appid"] >> appid;
+    fsSettings["baidu_face_AK"] >> AK;
+    fsSettings["baidu_face_SK"] >> SK;
 
     sub_img = nh.subscribe("/usb_cam/image_raw", 1, img_callback);
     ros::spin(); 
