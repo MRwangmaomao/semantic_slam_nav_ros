@@ -1,4 +1,4 @@
-#include <surfel_map.h>
+#include "surfel_map.h"
 #include <timer.h>
 #include <algorithm>
 #include <pcl/io/pcd_io.h>
@@ -140,7 +140,7 @@ void SurfelMap::synchronize_msgs()
 
     if((!find_image) || (!find_depth))
         return;
-
+    printf("receive image &&&&&&&&&&&&&& depth!\n");
     geometry_msgs::Pose relative_pose_ros = std::get<1>(pose_reference_buffer.front());
     int relative_index = std::get<2>(pose_reference_buffer.front());
 
