@@ -67,12 +67,13 @@ Viewer.ViewpointX: 0
 Viewer.ViewpointY: -0.7
 Viewer.ViewpointZ: -1.8
 Viewer.ViewpointF: 500
+
 Viewer.ShowOctotreeMap: 0
 Viewer.Showobject: 0
-Viewer.ShowPoints: 1
+Viewer.ShowPoints: 0
 Viewer.ShowAllPointcloud: 0
 
-DisplayDetect: 1
+DisplayDetect: 0
 #--------------------------------------------------------------------------------------------
 # PointCloudMapping Parameters
 #--------------------------------------------------------------------------------------------
@@ -88,3 +89,9 @@ octoMap.res: 0.05
 #--------------------------------------------------------------------------------------------
 Dynamic.flow: 70.0
 
+#--------------------------------------------------------------------------------------------
+# dense surfel mapping 
+#--------------------------------------------------------------------------------------------
+far_dist: 30.0
+near_dist: 0.5
+drift_free_poses: 10

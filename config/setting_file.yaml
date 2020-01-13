@@ -4,11 +4,16 @@
 rospackage_path: "/home/wpr/code/catkin_ws/src/orbslam_semantic_nav_ros/" #ros包路径
 color_img_topic: "/d400/color/image_raw" #彩色图像
 depth_img_topic: "/d400/aligned_depth_to_color/image_raw" #深度图像
+loop_path_topic: "/orb_slam/path"
+this_pose_topic: "/orb_slam/pose"
+loop_stamps_topic: "/orb_slam/loop"
 
 map_frame_id_param: "/map"
 camera_frame_id_param: "/camera_link"
 name_of_node: "/IM_robot"
 
+
+dense_surfel_save_name: "data/surfel_fusion"
 map_file_name_param: "config/map.bin" # 保存的地图名称
 voc_file_name_param: "Vocabulary/ORBvoc.txt" 
 settings_file_name_param: "config/realsensed400.yaml" # 相机和ORBSLAM算法参数 需要用户根据相机型号修改

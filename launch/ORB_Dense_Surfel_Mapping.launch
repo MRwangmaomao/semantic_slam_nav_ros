@@ -1,0 +1,43 @@
+<launch>
+
+  <param name="use_sim_time" value="true"/>
+ 
+  <!-- <node pkg="slam_semantic_nav_ros" type="kinect_camera_node"  name="kinect_camera_node" 
+    args="$(find slam_semantic_nav_ros)/config/setting_file.yaml " 
+    clear_params="true" output="screen" > 
+  </node>
+
+  
+  <node pkg="slam_semantic_nav_ros" type="surfel_fusion" name="surfel_fusion"
+  args="$(find slam_semantic_nav_ros)/config/setting_file.yaml " 
+    clear_params="true" output="screen">  
+  </node> -->
+  <node pkg="slam_semantic_nav_ros" type="surfel_fusion" name="surfel_fusion" clear_params="true" output="screen">
+
+      <!-- camera parameter -->
+    <param name="cam_width" value="640" />
+    <param name="cam_height" value="480" />
+
+    <!--input image info-->
+    <param name="cam_fx" value="611.4509887695312" />
+    <param name="cam_cx" value="433.2039794921875" />
+    <param name="cam_fy" value="611.4857177734375" />
+    <param name="cam_cy" value="249.4730224609375" />
+
+    <!-- fusion parameter, all in meter -->
+    <param name="fuse_far_distence" value="30.0" />
+    <param name="fuse_near_distence" value="0.5" />
+
+    <!-- for deform the map -->
+    <param name="drift_free_poses" value="10" />
+
+    <!-- for data save -->
+    <!-- <param name="save_name" value="/home/wang/bag/surfel_fusion/results/kitti/kitti00_loop" /> -->
+
+    <remap from="~image" to="/d400/aligned_depth_to_color/image_raw" />
+    <remap from="~depth" to="/d400/aligned_depth_to_color/image_raw" />
+    <remap from="~loop_path" to="/orb_slam/path" />
+    <remap from="~this_pose" to="/orb_slam/pose" />
+    <remap from="~loop_stamps" to="/orb_slam/loop" />
+  </node>
+</launch>

@@ -49,6 +49,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf2 
   image_geometry
   visualization_msgs 
+  pcl_ros
 )
  
 
@@ -105,6 +106,7 @@ ${catkin_INCLUDE_DIRS}
 ${PROJECT_SOURCE_DIR}/speech
 ${PROJECT_SOURCE_DIR}/costmap/include
 ${PROJECT_SOURCE_DIR}/aip-cpp/include
+${PROJECT_SOURCE_DIR}/dense_surfel_mapping/include
 ${PROJECT_SOURCE_DIR}
 ${PROJECT_SOURCE_DIR}/include
 ${PROJECT_SOURCE_DIR}/orbslam/include
@@ -157,8 +159,7 @@ orbslam/src/Viewer.cc
 catkin_package(
  INCLUDE_DIRS include
  LIBRARIES orbslam_semantic_nav_ros
- CATKIN_DEPENDS roscpp rospy message_filters
-#  costmap_lrgbd_ros
+ CATKIN_DEPENDS roscpp rospy message_filters 
  message_generation
  image_transport 
  tf
@@ -179,7 +180,7 @@ ${PROJECT_SOURCE_DIR}/Thirdparty/DBoW2/lib/libDBoW2.so
 ${PROJECT_SOURCE_DIR}/Thirdparty/g2o/lib/libg2o.so 
 ${PCL_LIBRARIES}
 /opt/ros/kinetic/lib/liboctomap.so
-        /opt/ros/kinetic/lib/liboctomath.so
+/opt/ros/kinetic/lib/liboctomath.so
 #${OCTOMAP_LIBRARIES} # octomap
 
 ${NCNN_TARGET_LIB}
@@ -216,3 +217,19 @@ target_link_libraries(rgbd_costmap_node  ${catkin_LIBRARIES} ${OpenCV_LIBS})
  
 add_executable(record_pose_node costmap/src/record_path_node.cpp) 
 target_link_libraries(record_pose_node  ${catkin_LIBRARIES} ${OpenCV_LIBS})
+
+
+# surfer mapping
+add_executable(surfel_fusion
+   dense_surfel_mapping/src/ros_node.cpp
+   dense_surfel_mapping/src/surfel_map.cpp
+   dense_surfel_mapping/src/fusion_functions.cpp 
+   dense_surfel_mapping/src/CameraPoseVisualization.cpp
+   )
+target_link_libraries(surfel_fusion ${catkin_LIBRARIES} ${OpenCV_LIBS} ${Boost_LIBRARIES}
+   )
+
+install(PROGRAMS 
+   script/publisher.py
+   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)

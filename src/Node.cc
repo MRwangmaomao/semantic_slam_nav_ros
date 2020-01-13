@@ -1,7 +1,7 @@
 /*
  * @Author: 王培荣
  * @Date: 2019-12-29 11:15:26
- * @LastEditTime : 2020-01-11 23:17:55
+ * @LastEditTime : 2020-01-12 14:36:17
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/src/RGBDNode.cpp
@@ -73,9 +73,9 @@ Node::Node (ros::NodeHandle &node_handle, std::string config_file_path) {
     node_handle_ = node_handle;
     // min_observations_per_point_ = 2;
   
-    path_publish_ = node_handle_.advertise<nav_msgs::Path>("/orb_slam2/path", 1000);
-    pose_publish_ = node_handle_.advertise<nav_msgs::Odometry>("/orb_slam2/pose", 1000);
-    loop_publish_ = node_handle_.advertise<sensor_msgs::PointCloud>("/orb_slam2/loop", 1000);
+    path_publish_ = node_handle_.advertise<nav_msgs::Path>("/orb_slam/path", 1000);
+    pose_publish_ = node_handle_.advertise<nav_msgs::Odometry>("/orb_slam/pose", 1000);
+    loop_publish_ = node_handle_.advertise<sensor_msgs::PointCloud>("/orb_slam/loop", 1000);
     // //Setup dynamic reconfigure
     // dynamic_reconfigure::Server<orb_slam2_ros::dynamic_reconfigureConfig>::CallbackType dynamic_param_callback; // 动态参数配置
     // dynamic_param_callback = boost::bind(&Node::ParamsChangedCallback, this, _1, _2);
@@ -127,7 +127,7 @@ bool Node::Update(ros::Time current_stamp) {
     orb_slam_->GetAllPoses(result_vector);
     nav_msgs::Path result_path;
     result_path.header.stamp = current_stamp;
-    result_path.header.frame_id = "map";
+    result_path.header.frame_id = "world";
     Eigen::Matrix4d temp_matrix, temp_matrix_inverse;
     Eigen::Matrix4d trans_form = Eigen::Matrix4d::Identity();
     // trans_form << 0,0,1,0, -1,0,0,0, 0,-1,0,0, 0,0,0,1;
@@ -172,23 +172,23 @@ bool Node::Update(ros::Time current_stamp) {
             time_diff = this_time_diff;
         }
     }
-    if (time_diff < 0.01)
-        printf("the reference keyframe is %d, keyframe number %d.\n", reference_index, result_vector.size());
-    else
-        printf("cannot find the reference keyframe! time difference %f, the stamp is %f, current is %f.!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n",
-               time_diff,
-               reference_stamp,
-               current_stamp);
+    // if (time_diff < 0.01)
+    //     printf("the reference keyframe is %d, keyframe number %d.\n", reference_index, result_vector.size());
+    // else
+    //     printf("cannot find the reference keyframe! time difference %f, the stamp is %f, current is %f.!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n",
+    //            time_diff,
+    //            reference_stamp,
+    //            current_stamp);
 
 
        // get keyframe decision
     LastKeyframeDecision_ = orb_slam_->GetKeyframeDecision();
-    if (LastKeyframeDecision_)
-        printf("this is keyframe.\n");
+    // if (LastKeyframeDecision_)
+    //     printf("this is keyframe.\n");
 
     nav_msgs::Odometry this_odometry;
     this_odometry.header.stamp = current_stamp;
-    this_odometry.header.frame_id = "map";
+    this_odometry.header.frame_id = "world";
     Eigen::Matrix4d T_cw, T_wc;
     for (int row_i = 0; row_i < 4; row_i++)
         for (int col_i = 0; col_i < 4; col_i++)
@@ -212,7 +212,7 @@ bool Node::Update(ros::Time current_stamp) {
     // get loop index
     sensor_msgs::PointCloud ros_loop_info;
     ros_loop_info.header.stamp = current_stamp;
-    ros_loop_info.header.frame_id = "map";
+    ros_loop_info.header.frame_id = "world";
     std::vector<std::pair<double, double>> loop_result;
     orb_slam_->GetLoopInfo(loop_result);
     sensor_msgs::ChannelFloat32 loop_channel;
@@ -229,12 +229,12 @@ bool Node::Update(ros::Time current_stamp) {
         }
         if (first_index > 0 && second_index > 0)
         {
-            printf("the loop info %d <---> %d\n", first_index, second_index);
+            // printf("the loop info %d <---> %d\n", first_index, second_index);
             loop_channel.values.push_back(first_index);
             loop_channel.values.push_back(second_index);
         }
-        else
-            printf("cannot find corresponding!\n");
+        // else
+            // printf("cannot find corresponding!\n");
     }
     ros_loop_info.channels.push_back(loop_channel);
     loop_publish_.publish(ros_loop_info);
