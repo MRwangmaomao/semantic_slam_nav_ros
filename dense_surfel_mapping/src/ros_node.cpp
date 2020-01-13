@@ -1,4 +1,5 @@
  
+ 
 #include <ros/ros.h>
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/PointCloud.h>
@@ -22,13 +23,13 @@ int main(int argc, char **argv)
 
   SurfelMap surfel_map(nh); 
 
-  ros::Subscriber sub_image = nh.subscribe("image", 5000, &SurfelMap::image_input, &surfel_map);
-  ros::Subscriber sub_depth = nh.subscribe("depth", 5000, &SurfelMap::depth_input, &surfel_map);
+  ros::Subscriber sub_image = nh.subscribe("/d400/color/image_raw", 5000, &SurfelMap::image_input, &surfel_map);
+  ros::Subscriber sub_depth = nh.subscribe("/d400/aligned_depth_to_color/image_raw", 5000, &SurfelMap::depth_input, &surfel_map);
   ros::Subscriber sub_save_map = nh.subscribe("save_map", 5000, &SurfelMap::save_map, &surfel_map);
 
-  message_filters::Subscriber<sensor_msgs::PointCloud> sub_loop_stamps(nh, "loop_stamps", 1000);
-  message_filters::Subscriber<nav_msgs::Path> sub_loop_path(nh, "loop_path", 1000);
-  message_filters::Subscriber<nav_msgs::Odometry> sub_this_pose(nh, "this_pose", 1000);
+  message_filters::Subscriber<sensor_msgs::PointCloud> sub_loop_stamps(nh, "/orb_slam/loop", 1000);
+  message_filters::Subscriber<nav_msgs::Path> sub_loop_path(nh, "/orb_slam/path", 1000);
+  message_filters::Subscriber<nav_msgs::Odometry> sub_this_pose(nh, "/orb_slam/pose", 1000);
   message_filters::Synchronizer<exact_policy> sync(exact_policy(1000), sub_loop_stamps, sub_loop_path, sub_this_pose);
   sync.registerCallback(boost::bind(&SurfelMap::orb_results_input, &surfel_map, _1, _2, _3));
 

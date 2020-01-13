@@ -76,7 +76,12 @@ void SurfelMap::save_map(const std_msgs::StringConstPtr &save_map_input)
 {
     string save_name = save_map_input->data;
     printf("save mesh modelt to %s.\n", save_name.c_str());
-    save_mesh(save_name);
+    
+    string pcd_name = save_name + ".PCD";
+    string mesh_name = save_name + "_mesh.PLY";
+    // save_cloud(pcd_name);
+    save_mesh(mesh_name);
+
     printf("save done!\n");
 }
 
@@ -92,7 +97,7 @@ void SurfelMap::image_input(const sensor_msgs::ImageConstPtr &image_input)
 
 void SurfelMap::depth_input(const sensor_msgs::ImageConstPtr &depth_input)
 {
-    // printf("receive depth!\n");
+    printf("receive depth!\n");
     cv_bridge::CvImagePtr image_ptr = cv_bridge::toCvCopy(depth_input, sensor_msgs::image_encodings::TYPE_32FC1);
     cv::Mat image = image_ptr->image;
     ros::Time stamp = image_ptr->header.stamp;
@@ -118,11 +123,11 @@ void SurfelMap::synchronize_msgs()
         {
             image_buffer.pop_front();
         }
-        else if(image_time == pose_reference_time)
-        {
+        else if(abs(image_time - pose_reference_time) < 0.05)
+        { 
             find_image = true;
             break;
-        }
+        } 
     }
     while(depth_buffer.size() > 0)
     {
@@ -131,11 +136,12 @@ void SurfelMap::synchronize_msgs()
         {
             depth_buffer.pop_front();
         }
-        else if(depth_time == pose_reference_time)
-        {
+        
+        else if(abs(depth_time - pose_reference_time) < 0.05)
+        { 
             find_depth = true;
             break;
-        }
+        } 
     }
 
     if((!find_image) || (!find_depth))
@@ -207,7 +213,7 @@ void SurfelMap::orb_results_input(
     const nav_msgs::PathConstPtr &loop_path_input,
     const nav_msgs::OdometryConstPtr &this_pose_input)
 {
-    printf("你好，，，，，receive orb message!\n");
+    printf("你好， 我收到了 orb message!\n");
     printf("\nbegin new frame process!!!\n");
     geometry_msgs::Pose input_pose = this_pose_input->pose.pose;
 
