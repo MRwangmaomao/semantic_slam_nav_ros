@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python
 from __future__ import print_function
 import sys
@@ -20,7 +21,7 @@ if __name__ == '__main__':
     depth_pub = rospy.Publisher("depth_image", Image, queue_size=100)
     depth_visual_pub = rospy.Publisher("depth_visual_image", Image, queue_size=100)
 
-    path_name = "/hdd_6t/kitti_odometry/gray/sequences/00"
+    path_name = "/home/wpr/code/dataset/kitty/00"
     image_index = 0
     rate = rospy.Rate(5)
     cv2.namedWindow("left")

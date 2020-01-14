@@ -32,7 +32,7 @@
     <param name="drift_free_poses" value="10" />
 
     <!-- for data save -->
-    <!-- <param name="save_name" value="/home/wpr/code/catkin_ws/src/orbslam_semantic_nav_ros/data/surfel_map" /> -->
+    <param name="save_name" value="/home/wpr/code/catkin_ws/src/orbslam_semantic_nav_ros/data/surfel_map" />
 
     <remap from="~image" to="/d400/color/image_raw" />
     <remap from="~depth" to="/d400/aligned_depth_to_color/image_raw" />

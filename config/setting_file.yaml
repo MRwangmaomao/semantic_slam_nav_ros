@@ -1,27 +1,31 @@
 %YAML:1.0
 
-# # realsensed400
+# 根路径
 rospackage_path: "/home/wpr/code/catkin_ws/src/orbslam_semantic_nav_ros/" #ros包路径
-color_img_topic: "/d400/color/image_raw" #彩色图像
-depth_img_topic: "/d400/aligned_depth_to_color/image_raw" #深度图像
-loop_path_topic: "/orb_slam/path"
-this_pose_topic: "/orb_slam/pose"
-loop_stamps_topic: "/orb_slam/loop"
 
-map_frame_id_param: "/map"
-camera_frame_id_param: "/camera_link"
+
+# 坐标系参数
+map_frame_id_param: "/map" 
 name_of_node: "/IM_robot"
+ 
 
-
-dense_surfel_save_name: "data/surfel_fusion"
-map_file_name_param: "config/map.bin" # 保存的地图名称
-voc_file_name_param: "Vocabulary/ORBvoc.txt" 
-settings_file_name_param: "config/realsensed400.yaml" # 相机和ORBSLAM算法参数 需要用户根据相机型号修改
+# ORBSLAM相关配置参数
 load_map_param: 0 # 纯定位模式:1  或者建图和定位模式:0  在构建好地图并保存之后才可以设置为纯定位模式1
 publish_pointcloud_param: 0 # 是否发送点云,在rviz可视化
 publish_pose_param: 0 # 发送相机位姿，在rviz可视化，用于导航等
 min_observations_per_point: 2
+ 
+map_file_name_param: "config/map.bin" # 保存的地图名称
+voc_file_name_param: "Vocabulary/ORBvoc.txt" 
 
+# 三维重构相关参数
+dense_surfel_save_name: "data/surfel_fusion"
+loop_path_topic: "/orb_slam/path"
+this_pose_topic: "/orb_slam/pose"
+loop_stamps_topic: "/orb_slam/loop"
+
+
+# 语音与人脸识别相关参数
 iflytek_appid: “5e0e18ce” # 需要用户修改为自己的科大讯飞id
 
 baidu_gesture_appid: "18165604" # 需要用户修改为自己的百度AI平台id
@@ -32,39 +36,47 @@ baidu_face_appid: "18166213"
 baidu_face_AK: "HVV12BIfUj6IEegBfC9KrRZK"
 baidu_face_SK: "azRZb0yDtaCdVtG1BF6zmYADAV3nRytX"
 
+
 # ----------------------------------------------------------------------------
 
-# # realsensed435
-# rospackage_path: "/home/wpr/code/catkin_ws/src/orbslam_semantic_nav_ros/"
-# color_img_topic: "/d435/color/image_raw"
-# depth_img_topic: "/d435/aligned_depth_to_color/image_raw"
-# map_frame_id_param: "/map"
-# camera_frame_id_param: "/camera_link"
-# name_of_node: "/IM_robot"
-# map_file_name_param: "config/map.bin"
-# voc_file_name_param: "Vocabulary/ORBvoc.txt"
+# realsensed400
+settings_file_name_param: "config/realsensed400.yaml" # 相机和ORBSLAM算法参数 需要用户根据相机型号修改
+color_img_topic: "/d400/color/image_raw" #彩色图像
+depth_img_topic: "/d400/aligned_depth_to_color/image_raw" #深度图像
+camera_frame_id_param: "/camera_link"
+
+
+# #----------------------------------------------------------------------------
+
+# # realsensed435 
 # settings_file_name_param: "config/realsensed435.yaml"
-# load_map_param: 0
-# publish_pointcloud_param: 0
-# publish_pose_param: 1
-# min_observations_per_point: 2
-#iflytek_appid: “5e0e18ce”
+# color_img_topic: "/d435/color/image_raw"
+# depth_img_topic: "/d435/aligned_depth_to_color/image_raw" 
+# camera_frame_id_param: "/camera_link" 
 
-# ----------------------------------------------------------------------------
 
-# kinect
-# rospackage_path: "/home/wpr/code/catkin_ws/src/orbslam_semantic_nav_ros/"
+# #----------------------------------------------------------------------------
+# #kinect 
+
+# settings_file_name_param: "config/kinectv2.yaml" 
 # color_img_topic: "/kinect2/qhd/image_color_rect"
-# depth_img_topic: "/kinect2/qhd/image_depth_rect"
-# map_frame_id_param: "/map"
-# camera_frame_id_param: "kinect2_rgb_optical_frame"
-# name_of_node: "/IM_robot"
-# map_file_name_param: "config/map.bin"
-# voc_file_name_param: "Vocabulary/ORBvoc.txt"
-# settings_file_name_param: "config/kinectv2.yaml"
-# folder_path: "/home/wpr/code/catkin_ws/src/orbslam_semantic_nav_ros/data/"
-# load_map_param: 0
-# publish_pointcloud_param: 1
-# publish_pose_param: 1
-# min_observations_per_point: 2
-# iflytek_appid: “5e0e18ce”
+# depth_img_topic: "/kinect2/qhd/image_depth_rect" 
+# camera_frame_id_param: "kinect2_rgb_optical_frame" 
+
+
+# # ----------------------------------------------------------------------------
+# # kitty dateset
+
+# settings_file_name_param: "config/kitty.yaml" 
+# color_img_topic: "/left_image"
+# depth_img_topic: "/depth_image" 
+# camera_frame_id_param: "/camera_link" 
+
+
+# #----------------------------------------------------------------------------
+# TUM dateset
+
+# settings_file_name_param: "config/TUM1.yaml" 
+# color_img_topic: "/kinect2/qhd/image_color_rect"
+# depth_img_topic: "/kinect2/qhd/image_depth_rect" 
+# camera_frame_id_param: "kinect2_rgb_optical_frame" 
