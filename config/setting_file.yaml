@@ -35,7 +35,7 @@ baidu_gesture_SK: "KTxGCvBRK6yvSAN1DHOh24Cl1Wk3G0jU"
 baidu_face_appid: "18166213"
 baidu_face_AK: "HVV12BIfUj6IEegBfC9KrRZK"
 baidu_face_SK: "azRZb0yDtaCdVtG1BF6zmYADAV3nRytX"
-
+baidu_picture_topic: "/kinect2/qhd/image_color_rect"
 
 # ----------------------------------------------------------------------------
 
