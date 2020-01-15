@@ -207,7 +207,7 @@ add_executable(iat_publish_node speech/src/iat_publish_node.cpp speech/src/speec
 target_link_libraries(iat_publish_node ${catkin_LIBRARIES} libmsc.so -ldl -lpthread -lm -lrt -lasound)
 
 add_executable(gesture_pub_node aip-cpp/src/gesture_pub_node.cpp )
-target_link_libraries(gesture_pub_node ${catkin_LIBRARIES} ${OpenCV_LIBS} -lcurl -ljsoncpp -lcrypto)
+target_link_libraries(gesture_pub_node ${catkin_LIBRARIES} ${OpenCV_LIBS} -lcurl -ljsoncpp -lcrypto -lpthread)
 
 add_executable(face_pub_node aip-cpp/src/face_pub_node.cpp )
 target_link_libraries(face_pub_node ${catkin_LIBRARIES} ${OpenCV_LIBS} -lcurl -ljsoncpp -lcrypto)

@@ -1,7 +1,7 @@
 /*
  * @Author: 王培荣
  * @Date: 2020-01-03 15:30:25
- * @LastEditTime : 2020-01-10 11:46:33
+ * @LastEditTime : 2020-01-15 18:05:17
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/aip-cpp/src/gesture_pub_node.cpp
@@ -12,8 +12,11 @@
 #include <opencv2/highgui/highgui.hpp> 
 #include <stdlib.h>
 #include <iostream> 
+#include <thread>
 #include <sensor_msgs/Image.h>
-#include <cv_bridge/cv_bridge.h> 
+#include <cv_bridge/cv_bridge.h>
+#include <geometry_msgs/Twist.h>
+#include <nav_msgs/Odometry.h>
 #include "slam_semantic_nav_ros/Gesture.h"
 #include "base/base.h"
 #include "body_analysis.h"
@@ -22,6 +25,7 @@ ros::Subscriber sub_img;
 ros::Publisher pub_voice;
 ros::Publisher pub_gesture;
 std::string rospackage_path;
+ros::Publisher speed_pub;
 
 std::string appid = "18165604";
 std::string AK = "EXXFhKHgb8uAGvo2yu9qAf4g";
@@ -29,6 +33,15 @@ std::string SK = "KTxGCvBRK6yvSAN1DHOh24Cl1Wk3G0jU";
 
 aip::Bodyanalysis client(appid, AK, SK);
 slam_semantic_nav_ros::Gesture gesture_msg;
+
+ 
+enum GestureSignel{
+    GestureSignel_fist, 
+    GestureSignel_five,
+    GestureSignel_ok
+}gesture_signel; // 使用到的手势信号类型
+
+geometry_msgs::Twist pub_speed; // 发布的速度消息
 
 void img_callback(const sensor_msgs::ImageConstPtr &msgRGB)
 {   
@@ -56,6 +69,15 @@ void img_callback(const sensor_msgs::ImageConstPtr &msgRGB)
                 int top = result["result"][i]["top"].asInt();
                 int height = result["result"][i]["height"].asInt();
                 int width = result["result"][i]["width"].asInt();
+                if(result["result"][i]["classname"].asString() == "fist"){
+                    gesture_signel = GestureSignel_fist;
+                }
+                if(result["result"][i]["classname"].asString() == "five"){
+                    gesture_signel = GestureSignel_five;
+                }
+                if(result["result"][i]["classname"].asString() == "ok"){
+                    gesture_signel = GestureSignel_ok;
+                }
                 cv::putText(img, result["result"][i]["classname"].asString(), cv::Point2i(left, top), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 255, 255));
                 cv::rectangle(img, cv::Rect(left, top, width, height), cv::Scalar(255, 0, 0),1, cv::LINE_8,0);
                 gesture_msg.classname = result["result"][i]["classname"].asString();
@@ -63,7 +85,7 @@ void img_callback(const sensor_msgs::ImageConstPtr &msgRGB)
                 pub_gesture.publish(gesture_msg);
                 std_msgs::String voice_word;
                 voice_word.data = result["result"][i]["classname"].asString();
-                pub_voice.publish(voice_word); 
+                pub_voice.publish(voice_word);
             } 
         }
         cv::namedWindow("gesture"); 
@@ -76,12 +98,28 @@ void img_callback(const sensor_msgs::ImageConstPtr &msgRGB)
         return;
     }
 }
- 
+
+void output(){
+    if(gesture_signel == GestureSignel_ok){ // 前进
+        pub_speed.linear.x = 0.1;
+        pub_speed.angular.z = 0;
+        speed_pub.publish(pub_speed);
+    }
+    if(gesture_signel == GestureSignel_fist){ // 停止
+        pub_speed.linear.x = 0;
+        pub_speed.angular.z = 0;
+        speed_pub.publish(pub_speed);
+    }
+    if(gesture_signel == GestureSignel_five){ // 空闲
+    }
+    sleep(100); // wait 100ms
+}
 
 int main(int argc, char ** argv){
     ros::init(argc,argv,"gesture_pub");
     ros::NodeHandle nh;
     ros::start();
+    gesture_signel = GestureSignel_five;
     if(argc != 2)
     {
         std::cerr << std::endl << "缺少参数" << std::endl << 
@@ -108,9 +146,15 @@ int main(int argc, char ** argv){
     fsSettings["baidu_gesture_AK"] >> AK;
     fsSettings["baidu_gesture_SK"] >> SK;
 
+
+
     sub_img = nh.subscribe("/usb_cam/image_raw", 1, img_callback);
     pub_voice = nh.advertise<std_msgs::String> ("/voiceWords", 1);
     pub_gesture = nh.advertise<slam_semantic_nav_ros::Gesture> ("/GestureSignal", 1);
+
+    std::thread move_control(output);
+    move_control.detach();
+
     ros::spin(); 
     ros::shutdown(); 
     return 0;
