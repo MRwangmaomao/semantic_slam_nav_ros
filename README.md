@@ -1,17 +1,15 @@
 <!--
  * @Author: 王培荣
  * @Date: 2019-12-31 15:21:52
- * @LastEditTime : 2020-01-15 14:12:40
+ * @LastEditTime : 2020-01-15 14:35:45
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/README.md
  -->
 # orbslam_semantic_nav_ros
 
-> 清华大学
-> > 深圳国际研究生院
-> > > 先进制造学部
-> > > > 精密测控组
+> 清华大学 深圳国际研究生院 
+> > 先进制造学部 精密测控组 
 
 Have Done:
 
