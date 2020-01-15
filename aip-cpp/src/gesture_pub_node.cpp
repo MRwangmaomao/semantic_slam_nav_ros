@@ -1,7 +1,7 @@
 /*
  * @Author: 王培荣
  * @Date: 2020-01-03 15:30:25
- * @LastEditTime : 2020-01-15 18:05:17
+ * @LastEditTime : 2020-01-15 18:11:28
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/aip-cpp/src/gesture_pub_node.cpp
@@ -30,6 +30,7 @@ ros::Publisher speed_pub;
 std::string appid = "18165604";
 std::string AK = "EXXFhKHgb8uAGvo2yu9qAf4g";
 std::string SK = "KTxGCvBRK6yvSAN1DHOh24Cl1Wk3G0jU";
+std::string image_topic;
 
 aip::Bodyanalysis client(appid, AK, SK);
 slam_semantic_nav_ros::Gesture gesture_msg;
@@ -47,7 +48,7 @@ void img_callback(const sensor_msgs::ImageConstPtr &msgRGB)
 {   
     try
     { 
-        cv_bridge::CvImagePtr cv_image = cv_bridge::toCvCopy(msgRGB, sensor_msgs::image_encodings::BGR8);
+        cv_bridge::CvImagePtr cv_image = cv_bridge::toCvCopy(msgRGB);
         Json::Value result;
         std::string image;
         std::string path = rospackage_path + "data/face.jpg";
@@ -145,10 +146,9 @@ int main(int argc, char ** argv){
     fsSettings["baidu_gesture_appid"] >> appid;
     fsSettings["baidu_gesture_AK"] >> AK;
     fsSettings["baidu_gesture_SK"] >> SK;
-
-
-
-    sub_img = nh.subscribe("/usb_cam/image_raw", 1, img_callback);
+    fsSettings["baidu_picture_topic"] >> image_topic;
+    
+    sub_img = nh.subscribe(image_topic, 1, img_callback);
     pub_voice = nh.advertise<std_msgs::String> ("/voiceWords", 1);
     pub_gesture = nh.advertise<slam_semantic_nav_ros::Gesture> ("/GestureSignal", 1);
 
@@ -159,3 +159,4 @@ int main(int argc, char ** argv){
     ros::shutdown(); 
     return 0;
 }
+

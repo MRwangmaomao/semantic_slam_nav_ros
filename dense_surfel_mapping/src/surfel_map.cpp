@@ -76,28 +76,35 @@ void SurfelMap::save_map(const std_msgs::StringConstPtr &save_map_input)
 {
     string save_name = save_map_input->data;
     printf("save mesh modelt to %s.\n", save_name.c_str());
-    save_mesh(save_name);
+    
+    string pcd_name = save_name + ".PCD";
+    string mesh_name = save_name + "_mesh.PLY";
+    // save_cloud(pcd_name);
+    save_mesh(mesh_name);
+
     printf("save done!\n");
 }
 
 void SurfelMap::image_input(const sensor_msgs::ImageConstPtr &image_input)
 {
-    // printf("receive image!\n");
+    printf("receive image!\n");
     cv_bridge::CvImagePtr image_ptr = cv_bridge::toCvCopy(image_input, sensor_msgs::image_encodings::MONO8);
     cv::Mat image = image_ptr->image;
     ros::Time stamp = image_ptr->header.stamp;
     image_buffer.push_back(std::make_pair(stamp, image));
     synchronize_msgs();
+    printf("end receive image!\n");
 }
 
 void SurfelMap::depth_input(const sensor_msgs::ImageConstPtr &depth_input)
 {
-    // printf("receive depth!\n");
+    printf("receive depth!\n");
     cv_bridge::CvImagePtr image_ptr = cv_bridge::toCvCopy(depth_input, sensor_msgs::image_encodings::TYPE_32FC1);
     cv::Mat image = image_ptr->image;
     ros::Time stamp = image_ptr->header.stamp;
     depth_buffer.push_back(std::make_pair(stamp, image));
     synchronize_msgs();
+    printf("end receive depth!\n");
 }
 
 void SurfelMap::synchronize_msgs()
@@ -118,11 +125,11 @@ void SurfelMap::synchronize_msgs()
         {
             image_buffer.pop_front();
         }
-        else if(image_time == pose_reference_time)
-        {
+        else if(abs(image_time - pose_reference_time) < 0.05)
+        { 
             find_image = true;
             break;
-        }
+        } 
     }
     while(depth_buffer.size() > 0)
     {
@@ -131,11 +138,12 @@ void SurfelMap::synchronize_msgs()
         {
             depth_buffer.pop_front();
         }
-        else if(depth_time == pose_reference_time)
-        {
+        
+        else if(abs(depth_time - pose_reference_time) < 0.05)
+        { 
             find_depth = true;
             break;
-        }
+        } 
     }
 
     if((!find_image) || (!find_depth))
@@ -207,8 +215,8 @@ void SurfelMap::orb_results_input(
     const nav_msgs::PathConstPtr &loop_path_input,
     const nav_msgs::OdometryConstPtr &this_pose_input)
 {
-    printf("你好，，，，，receive orb message!\n");
-    printf("\nbegin new frame process!!!\n");
+    printf("\n你好， 我收到了 orb message!\n");
+    printf("begin new frame process!!!\n");
     geometry_msgs::Pose input_pose = this_pose_input->pose.pose;
 
     // transform the kitti pose
@@ -314,7 +322,7 @@ void SurfelMap::orb_results_input(
             printf("cannot find loop pose %d and %d, we have %d poses!\n", loop_first, loop_second, poses_database.size());
         }
     }
-
+    printf("add loop information.\n");
     // if the current pose is new keyframe
     bool is_new_keyframe;
     if(this_pose_input->pose.covariance[0] > 0)
@@ -326,6 +334,7 @@ void SurfelMap::orb_results_input(
         is_new_keyframe = true;
     if(is_new_keyframe)
     {
+        printf("add new pose.\n");
         // add new pose
         PoseElement this_pose_element;
         int this_pose_index = poses_database.size();
@@ -389,295 +398,7 @@ void SurfelMap::pose_eigen2ros(Eigen::Matrix4d &T, geometry_msgs::Pose &pose)
     pose.position.y = T(1,3);
     pose.position.z = T(2,3);
 }
-
-// this is a naive implementation
-// void SurfelMap::loop_stamp_input(const geometry_msgs::PointStampedConstPtr &loop_stamp)
-// {
-//     printf("receive loop info.\n");
-
-//     double this_frame_stamp = loop_stamp->point.x;
-//     double loop_frame_stamp = loop_stamp->point.y;
-//     int this_frame_index = -1;
-//     int loop_frame_index = -1;
-//     for(int i = 0; i < poses_database.size(); i++)
-//     {
-//         double test_frame_stamp = poses_database[i].cam_stamp.toSec();
-//         if(fabs(test_frame_stamp - this_frame_stamp) < 0.01)
-//             this_frame_index = i;
-//         if(fabs(test_frame_stamp - loop_frame_stamp) < 0.01)
-//             loop_frame_index = i;
-//     }
-//     if(this_frame_index > 0 && loop_frame_index > 0)
-//     {
-//         poses_database[this_frame_index].linked_pose_index.push_back(loop_frame_index);
-//         poses_database[loop_frame_index].linked_pose_index.push_back(this_frame_index);
-//     }
-//     else
-//     {
-//         printf("receive invaild loops!\n");
-//         return;
-//     }
-//     printf("receive loop info %d <----> %d\n", loop_frame_index, this_frame_index);
-
-//     // add local surfels into the local surfels
-//     vector<int> new_driftless_poses;
-//     get_driftfree_poses(poses_database.size() - 1, new_driftless_poses);
-//     vector<int> poses_to_add;
-//     for(int i = 0; i < new_driftless_poses.size(); i++)
-//     {
-//         if(local_surfels_indexs.find(new_driftless_poses[i]) == local_surfels_indexs.end())
-//             poses_to_add.push_back(new_driftless_poses[i]);
-//     }
-//     if(poses_to_add.size() == 0)
-//         return;
-//     printf("loop! this pose %d, need to add!\n", poses_database.size() - 1);
-//     for (auto a : poses_to_add)
-//         std::cout << a << " ";
-
-//     // add the surfels
-//     // 1.0 add indexs
-//     local_surfels_indexs.insert(poses_to_add.begin(), poses_to_add.end());
-
-//     // 2.0 add surfels
-//     // 2.1 remove the inactive_pointcloud
-//     printf("\n");
-//     std::chrono::time_point<std::chrono::system_clock> start_time, end_time;
-//     start_time = std::chrono::system_clock::now();
-
-//     for(int add_i = 0; add_i < poses_to_add.size(); add_i++)
-//     {
-//         int add_index = poses_to_add[add_i];
-//         int point_num = poses_database[add_index].attached_surfels.size();
-//         int pre_size = inactive_pointcloud->size();
-
-//         PointCloud::iterator begin_ptr;
-//         PointCloud::iterator end_ptr;
-//         begin_ptr = inactive_pointcloud->begin() + poses_database[add_index].points_begin_index;
-//         end_ptr = inactive_pointcloud->begin() + poses_database[add_index].points_begin_index + poses_database[add_index].attached_surfels.size();
-//         inactive_pointcloud->erase(begin_ptr, end_ptr);
-
-//         for(int pi = poses_database[add_index].points_pose_index + 1; pi < pointcloud_pose_index.size(); pi++)
-//         {
-//             poses_database[pointcloud_pose_index[pi]].points_begin_index -= point_num;
-//             poses_database[pointcloud_pose_index[pi]].points_pose_index -= 1; 
-//         }
-//         pointcloud_pose_index.erase(pointcloud_pose_index.begin() + poses_database[add_index].points_pose_index);
-//         poses_database[add_index].points_pose_index = -1;
-        
-//         printf("erase %d points of pose %d, from %d -> %d.\n", point_num, add_index, pre_size, inactive_pointcloud->size());
-//     }
-
-//     // 2.3 add the surfels into local
-//     for(int pi = 0; pi < poses_to_add.size(); pi++)
-//     {
-//         int pose_index = poses_to_add[pi];
-//         local_surfels.insert(
-//             local_surfels.end(),
-//             poses_database[pose_index].attached_surfels.begin(),
-//             poses_database[pose_index].attached_surfels.end());
-//         poses_database[pose_index].attached_surfels.clear();
-//         poses_database[pose_index].points_begin_index = -1;
-//     }
-//     end_time = std::chrono::system_clock::now();
-//     std::chrono::duration<double> move_pointcloud_time = end_time - start_time;
-//     printf("move surfels cost %f ms.\n", move_pointcloud_time.count()*1000.0);
-
-//     // check the data
-//     printf("check after!\n");
-//     vector<std::pair<int, int>> pose_memeory_vector;
-//     for(int i = 0; i < poses_database.size(); i++)
-//     {
-//         int begin_index = poses_database[i].points_begin_index;
-//         int surfel_size = poses_database[i].attached_surfels.size();
-//         if(begin_index >= 0)
-//             pose_memeory_vector.push_back(std::make_pair(begin_index, surfel_size));
-//     }
-//     std::sort(
-//         pose_memeory_vector.begin(),
-//         pose_memeory_vector.end(),
-//         []( const std::pair<int,int>& first, const std::pair<int,int>& second)
-//         {
-//             return first.first < second.first;
-//         }
-//     );
-//     printf("we have %d pose pointclouds.\n", pose_memeory_vector.size());
-//     int accumulate_index = 0;
-//     for(int i = 0; i < pose_memeory_vector.size(); i++)
-//     {
-//         printf("cloud begin at %d have %d points.\n", pose_memeory_vector[i].first, pose_memeory_vector[i].second);
-//         if(accumulate_index != pose_memeory_vector[i].first && pose_memeory_vector[i].second > 0)
-//             printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!error 2!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
-//         accumulate_index += pose_memeory_vector[i].second;
-//     }
-// }
-
-// void SurfelMap::loop_stamp_input(const geometry_msgs::PointStampedConstPtr &loop_stamp)
-// {
-//     printf("receive loop info.\n");
-
-//     double this_frame_stamp = loop_stamp->point.x;
-//     double loop_frame_stamp = loop_stamp->point.y;
-//     int this_frame_index = -1;
-//     int loop_frame_index = -1;
-//     for(int i = 0; i < poses_database.size(); i++)
-//     {
-//         double test_frame_stamp = poses_database[i].cam_stamp.toSec();
-//         if(fabs(test_frame_stamp - this_frame_stamp) < 0.01)
-//             this_frame_index = i;
-//         if(fabs(test_frame_stamp - loop_frame_stamp) < 0.01)
-//             loop_frame_index = i;
-//     }
-//     if(this_frame_index > 0 && loop_frame_index > 0)
-//     {
-//         poses_database[this_frame_index].linked_pose_index.push_back(loop_frame_index);
-//         poses_database[loop_frame_index].linked_pose_index.push_back(this_frame_index);
-//     }
-//     else
-//     {
-//         printf("receive invaild loops!\n");
-//         return;
-//     }
-//     printf("receive loop info %d <----> %d\n", loop_frame_index, this_frame_index);
-
-//     // add local surfels into the local surfels
-//     vector<int> new_driftless_poses;
-//     get_driftfree_poses(poses_database.size() - 1, new_driftless_poses);
-//     vector<int> poses_to_add;
-//     for(int i = 0; i < new_driftless_poses.size(); i++)
-//     {
-//         if(local_surfels_indexs.find(new_driftless_poses[i]) == local_surfels_indexs.end())
-//             poses_to_add.push_back(new_driftless_poses[i]);
-//     }
-//     if(poses_to_add.size() == 0)
-//         return;
-//     printf("loop! this pose %d, need to add!\n", poses_database.size() - 1);
-//     for (auto a : poses_to_add)
-//         std::cout << a << " ";
-
-//     // add the surfels
-//     // 1.0 add indexs
-//     local_surfels_indexs.insert(poses_to_add.begin(), poses_to_add.end());
-
-//     // 2.0 add surfels
-//     // 2.1 remove the inactive_pointcloud
-//     printf("\n");
-//     std::chrono::time_point<std::chrono::system_clock> start_time, end_time;
-//     start_time = std::chrono::system_clock::now();
-//     std::vector<std::pair<int, int>> remove_info;//first, pointcloud start, pointcloud size, pointcloud pose index
-//     for(int add_i = 0; add_i < poses_to_add.size(); add_i++)
-//     {
-//         int add_index = poses_to_add[add_i];
-//         int pointcloud_pose_index = poses_database[add_index].points_pose_index;
-//         remove_info.push_back(std::make_pair(pointcloud_pose_index, add_index));
-//     }
-//     std::sort(
-//     remove_info.begin(),
-//     remove_info.end(),
-//     []( const std::pair<int, int >& first, const std::pair<int, int>& second)
-//     {
-//         return first.first < second.first;
-//     }
-//     );
-//     // printf("sort done!\n");
-//     // for(int i = 0; i < remove_info.size(); i++)
-//     // {
-//     //     printf("%d, %d\n", remove_info[i].first, remove_info[i].second);
-//     // }
-//     int remove_begin_index = remove_info[0].second;
-//     int remove_points_size = poses_database[remove_begin_index].attached_surfels.size();
-//     int remove_pose_size = 1;
-//     for(int remove_i = 1; remove_i <= remove_info.size(); remove_i++)
-//     {
-//         bool need_remove = false;
-//         if(remove_i == remove_info.size())
-//             need_remove = true;
-//         if(remove_i < remove_info.size())
-//         {
-//             if(remove_info[remove_i].first != (remove_info[remove_i-1].first + 1))
-//                 need_remove = true;
-//         }
-//         if(!need_remove)
-//         {
-//             int this_pose_index = remove_info[remove_i].second;
-//             remove_points_size += poses_database[this_pose_index].attached_surfels.size();
-//             remove_pose_size += 1;
-//             continue;
-//         }
-
-//         int remove_end_index = remove_info[remove_i - 1].second;
-//         printf("remove from pose %d -> %d, has %d points\n", remove_begin_index, remove_end_index, remove_points_size);
-
-//         PointCloud::iterator begin_ptr;
-//         PointCloud::iterator end_ptr;
-//         begin_ptr = inactive_pointcloud->begin() + poses_database[remove_begin_index].points_begin_index;
-//         end_ptr = begin_ptr + remove_points_size;
-//         inactive_pointcloud->erase(begin_ptr, end_ptr);
-        
-//         for(int pi = poses_database[remove_end_index].points_pose_index + 1; pi < pointcloud_pose_index.size(); pi++)
-//         {
-//             poses_database[pointcloud_pose_index[pi]].points_begin_index -= remove_points_size;
-//             poses_database[pointcloud_pose_index[pi]].points_pose_index -= remove_pose_size; 
-//         }
- 
-//         pointcloud_pose_index.erase(
-//             pointcloud_pose_index.begin() + poses_database[remove_begin_index].points_pose_index,
-//             pointcloud_pose_index.begin() + poses_database[remove_end_index].points_pose_index + 1
-//         );
-
-
-//         if(remove_i < remove_info.size())
-//         {
-//             remove_begin_index = remove_info[remove_i].second;;
-//             remove_points_size = poses_database[remove_begin_index].attached_surfels.size();
-//             remove_pose_size = 1;
-//         }
-//     }
-
-//     // 2.3 add the surfels into local
-//     for(int pi = 0; pi < poses_to_add.size(); pi++)
-//     {
-//         int pose_index = poses_to_add[pi];
-//         local_surfels.insert(
-//             local_surfels.end(),
-//             poses_database[pose_index].attached_surfels.begin(),
-//             poses_database[pose_index].attached_surfels.end());
-//         poses_database[pose_index].attached_surfels.clear();
-//         poses_database[pose_index].points_begin_index = -1;
-//         poses_database[pose_index].points_pose_index = -1;
-//     }
-//     end_time = std::chrono::system_clock::now();
-//     std::chrono::duration<double> move_pointcloud_time = end_time - start_time;
-//     printf("move surfels cost %f ms.\n", move_pointcloud_time.count()*1000.0);
-
-//     // // check the data
-//     // printf("check after!\n");
-//     // vector<std::pair<int, int>> pose_memeory_vector;
-//     // for(int i = 0; i < poses_database.size(); i++)
-//     // {
-//     //     int begin_index = poses_database[i].points_begin_index;
-//     //     int surfel_size = poses_database[i].attached_surfels.size();
-//     //     if(begin_index >= 0)
-//     //         pose_memeory_vector.push_back(std::make_pair(begin_index, surfel_size));
-//     // }
-//     // std::sort(
-//     //     pose_memeory_vector.begin(),
-//     //     pose_memeory_vector.end(),
-//     //     []( const std::pair<int,int>& first, const std::pair<int,int>& second)
-//     //     {
-//     //         return first.first < second.first;
-//     //     }
-//     // );
-//     // printf("we have %d pose pointclouds.\n", pose_memeory_vector.size());
-//     // int accumulate_index = 0;
-//     // for(int i = 0; i < pose_memeory_vector.size(); i++)
-//     // {
-//     //     printf("cloud begin at %d have %d points.\n", pose_memeory_vector[i].first, pose_memeory_vector[i].second);
-//     //     if(accumulate_index != pose_memeory_vector[i].first && pose_memeory_vector[i].second > 0)
-//     //         printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!error 2!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
-//     //     accumulate_index += pose_memeory_vector[i].second;
-//     // }
-// }
-
+  
 void SurfelMap::warp_inactive_surfels_cpu_kernel(int thread_i, int thread_num)
 {
     std::chrono::time_point<std::chrono::system_clock> start_time, end_time;
@@ -687,20 +408,21 @@ void SurfelMap::warp_inactive_surfels_cpu_kernel(int thread_i, int thread_num)
     int end_index = begin_index + step;
     if (thread_i == thread_num - 1)
         end_index = poses_database.size();
-
+    printf("warp_inactive_surfels_cpu_kernel: begin_index:%d  end_index:%d  ",begin_index,end_index);
     for(int i = begin_index; i < end_index; i ++)
-    {
+    { 
         if( poses_database[i].cam_pose.position.x == poses_database[i].loop_pose.position.x &&
             poses_database[i].cam_pose.position.y == poses_database[i].loop_pose.position.y &&
             poses_database[i].cam_pose.position.z == poses_database[i].loop_pose.position.z
             )
             continue;
+        printf("continue! ");
         if(poses_database[i].attached_surfels.size() == 0)
         {
             poses_database[i].cam_pose = poses_database[i].loop_pose;
             continue;
         }
-
+        // printf("continue! ");
         PointCloud::Ptr warped_new_pointcloud(new PointCloud);
 
         Eigen::Matrix4d pre_pose, after_pose;
@@ -739,12 +461,13 @@ void SurfelMap::warp_inactive_surfels_cpu_kernel(int thread_i, int thread_num)
             warped_new_pointcloud->push_back(new_point);
         }
         poses_database[i].cam_pose = poses_database[i].loop_pose;
+        printf("pointcloud->size():%d  ",warped_new_pointcloud->size());
         std::copy(&warped_new_pointcloud->front(), &warped_new_pointcloud->back(), &inactive_pointcloud->at(poses_database[i].points_begin_index));
     }
     end_time = std::chrono::system_clock::now();
     std::chrono::duration<double> used_time = end_time - start_time;
     double all_time = used_time.count() * 1000.0;
-    printf("warp kernel %d, cost %f ms.\n", thread_i, all_time);
+    printf("\nwarp inactive surfels kernel %d, cost %f ms.\n", thread_i, all_time);
 }
 
 void SurfelMap::warp_active_surfels_cpu_kernel(int thread_i, int thread_num, Eigen::Matrix4f transform_m)
@@ -785,25 +508,20 @@ void SurfelMap::warp_active_surfels_cpu_kernel(int thread_i, int thread_num, Eig
     end_time = std::chrono::system_clock::now();
     std::chrono::duration<double> used_time = end_time - start_time;
     double all_time = used_time.count() * 1000.0;
-    // printf("warp kernel %d, cost %f ms.\n", thread_i, all_time);
+    printf("warp active surfels kernel %d, cost %f ms.\n", thread_i, all_time);
 }
 
 void SurfelMap::warp_surfels()
 {
     warp_thread_pool.clear();
-    warp_thread_num = 10;
+    warp_thread_num = 8;
     // warp inactive surfels
     for(int i = 0; i < warp_thread_num; i++)
     {
         std::thread this_thread(&SurfelMap::warp_inactive_surfels_cpu_kernel, this, i, warp_thread_num);
         warp_thread_pool.push_back(std::move(this_thread));
     }
-
-    // for(int i = 0; i < warp_thread_pool.size(); i++)
-    //     if(warp_thread_pool[i].joinable())
-    //         warp_thread_pool[i].join();
-    // warp_thread_pool.clear();
-
+ 
     // warp active surfels
     int local_index = *local_surfels_indexs.begin();
     Eigen::Matrix4d pre_pose, loop_pose;
@@ -822,75 +540,7 @@ void SurfelMap::warp_surfels()
         if(warp_thread_pool[i].joinable())
             warp_thread_pool[i].join();
 }
-
-// void SurfelMap::warp_inactive_surfels()
-// {
-//     std::chrono::time_point<std::chrono::system_clock> all_start_time;
-//     std::chrono::time_point<std::chrono::system_clock> all_end_time;
-//     all_start_time = std::chrono::system_clock::now();
-    
-//     std::vector<std::thread> thread_pool;
-//     int thread_num = 10;
-//     for(int i = 0; i < thread_num; i++)
-//     {
-//         std::thread this_thread(&SurfelMap::warp_inactive_surfels_cpu_kernel, this, i, thread_num);
-//         thread_pool.push_back(std::move(this_thread));
-//     }
-//     for(int i = 0; i < thread_num; i++)
-//         if(thread_pool[i].joinable())
-//             thread_pool[i].join();
-
-//     all_end_time = std::chrono::system_clock::now();
-//     std::chrono::duration<double> all_used_time = all_end_time - all_start_time;
-//     printf("warp total cost %f ms.\n", (all_used_time.count()*1000.0) );
-// }
-
-// void SurfelMap::loop_path_input(const nav_msgs::PathConstPtr &loop_path_input)
-// {
-//     printf("\n\n\nreceive loop path!\n");
-//     int received_pose_num = loop_path_input->poses.size();
-//     bool loop_changed = false;
-//     for(int i = 0; i < poses_database.size(); i++)
-//     {
-//         poses_database[i].loop_pose = loop_path_input->poses[i].pose;
-//         if( loop_path_input->poses[i].pose.position.x != poses_database[i].cam_pose.position.x
-//             || loop_path_input->poses[i].pose.position.y != poses_database[i].cam_pose.position.y
-//             || loop_path_input->poses[i].pose.position.z != poses_database[i].cam_pose.position.z)
-//             loop_changed = true;
-//     }
-
-//     // for local surfels warp
-//     if( poses_database.size() > 0)
-//     {
-//         if(poses_database.back().cam_pose.position.x != poses_database.back().loop_pose.position.x
-//             ||  poses_database.back().cam_pose.position.y != poses_database.back().loop_pose.position.y
-//             ||  poses_database.back().cam_pose.position.z != poses_database.back().loop_pose.position.z)
-//         {
-//             Eigen::Matrix4d pre_pose, after_pose;
-//             pose_ros2eigen(poses_database.back().cam_pose, pre_pose);
-//             pose_ros2eigen(poses_database.back().loop_pose, after_pose);
-//             local_loop_warp = after_pose * pre_pose.inverse() * local_loop_warp;
-//             std::cout << "the warp matrix is :\n" << local_loop_warp << endl;
-//         }
-//     }
-
-//     // TO DO
-//     if(loop_changed)
-//     {
-//         printf("the loop changed! warp the inactive surfels!!\n");
-//         warp_inactive_surfels();
-//     }
-
-//     // put into new pose
-//     if(loop_path_input->poses.size() > poses_database.size())
-//     {
-//         await_pose = loop_path_input->poses[poses_database.size()];
-//         has_await_pose = true;
-//     }
-
-//     // fuse or initialize surfels
-//     synchronize_buffer();
-// }
+ 
 
 void SurfelMap::calculate_memory_usage()
 {
@@ -1024,39 +674,7 @@ void SurfelMap::publish_pose_graph(ros::Time pub_stamp, int reference_index)
     driftfree_path_publish.publish(driftfree_marker);
     driftfree_path_publish.publish(drift_marker);
 }
-
-// void SurfelMap::fuse_inputs()
-// {
-//     printf("fuse image, depth, pose!\n");
-//     if (poses_database.size() == 0)
-//         initialize_map(image, depth, cam_pose, cam_time);
-//     else
-//         fuse_map(image, depth, cam_pose, cam_time);
-// }
-
-// void SurfelMap::initialize_map(cv::Mat image, cv::Mat depth, geometry_msgs::Pose pose, ros::Time stamp)
-// {
-//     Timer initialize_timer("initialize");
-//     PoseElement first_pose;
-//     first_pose.cam_pose = pose;
-//     first_pose.cam_stamp = stamp;
-//     vector<SurfelElement> surfels;
-//     cuda_function::initialize_surfel_map_with_superpixel(image, depth, pose, surfels, fuse_param_gpuptr);
-//     initialize_timer.middle("gpu part");
-//     for(int i = 0; i < surfels.size(); i++)
-//     {
-//         if(surfels[i].update_times != 0)
-//         {
-//             SurfelElement this_surfel = surfels[i];
-//             local_surfels.push_back(this_surfel);
-//         }
-//     }
-//     initialize_timer.middle("cpu part");
-//     initialize_timer.end();
-//     poses_database.push_back(first_pose);
-//     local_surfels_indexs.insert(0);
-// }
-
+  
 void SurfelMap::fuse_map(cv::Mat image, cv::Mat depth, Eigen::Matrix4f pose_input, int reference_index)
 {
     printf("fuse surfels with reference index %d and %d surfels!\n", reference_index, local_surfels.size());    

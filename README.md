@@ -1,20 +1,48 @@
 <!--
  * @Author: 王培荣
  * @Date: 2019-12-31 15:21:52
- * @LastEditTime : 2020-01-10 11:39:18
+ * @LastEditTime : 2020-01-15 14:35:45
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/README.md
  -->
 # orbslam_semantic_nav_ros
 
+> 清华大学 深圳国际研究生院 
+> > 先进制造学部 精密测控组 
+
+Have Done:
+
+1. 动态物体检测
+  
+2. 视觉建图与定位
+
+3. 重定位
+
+4. 稠密点云、面元三维重建
+
+5. 语义地图
+
+6. 手势识别控制
+
+7. 手势识别控制
+
+8. 局部避障与DWA控制
+
+9. 语音识别与播放
+
+
 TODO：
-   
-1. 常用语音对话与语音唤醒功能
+    
+1. 添加基于二维码的全局定位误差矫正功能，该功能可以提高系统稳定性，确保项目落地
 
-2. 添加基于二维码的全局定位误差矫正功能
+2. 多个相机slam，增强系统鲁棒性
 
-3. 待定
+3. 二维投影地图构建，全局路径规划，智能导航与交互
+
+4. 基于强化学习的自主探索系统
+
+5. 待定
 
 ---
 演示1：

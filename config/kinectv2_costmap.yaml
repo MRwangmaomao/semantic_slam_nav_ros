@@ -13,8 +13,8 @@ robot_pose_topic: "/gt"
 # camera parameters  
 camera_name: "kinect2"
 camera_frame: "kinect2_rgb_optical_frame"
-depth_topic: "/kinect2/qhd/image_color_rect"
-camera_info_topic: "/kinect2/qhd/image_depth_rect" 
+depth_topic: "/kinect2/qhd/image_depth_rect"
+camera_info_topic: "/kinect2/qhd/camera_info" 
 image_height: 540
 image_width: 960
 fx: 571.8319822931295
