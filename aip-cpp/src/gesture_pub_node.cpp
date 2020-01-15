@@ -1,7 +1,7 @@
 /*
  * @Author: 王培荣
  * @Date: 2020-01-03 15:30:25
- * @LastEditTime : 2020-01-15 18:11:28
+ * @LastEditTime : 2020-01-15 19:12:52
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/aip-cpp/src/gesture_pub_node.cpp
@@ -19,7 +19,7 @@
 #include <nav_msgs/Odometry.h>
 #include "slam_semantic_nav_ros/Gesture.h"
 #include "base/base.h"
-#include "body_analysis.h"
+#include "body_analysis.h" 
 
 ros::Subscriber sub_img;
 ros::Publisher pub_voice;
@@ -42,7 +42,7 @@ enum GestureSignel{
     GestureSignel_ok
 }gesture_signel; // 使用到的手势信号类型
 
-geometry_msgs::Twist pub_speed; // 发布的速度消息
+geometry_msgs::Twist twist_speed; // 发布的速度消息
 
 void img_callback(const sensor_msgs::ImageConstPtr &msgRGB)
 {   
@@ -70,14 +70,18 @@ void img_callback(const sensor_msgs::ImageConstPtr &msgRGB)
                 int top = result["result"][i]["top"].asInt();
                 int height = result["result"][i]["height"].asInt();
                 int width = result["result"][i]["width"].asInt();
-                if(result["result"][i]["classname"].asString() == "fist"){
+                if(result["result"][i]["classname"].asString() == "Fist"){
                     gesture_signel = GestureSignel_fist;
+                    std::cout << "change as GestureSignel_fist" << std::endl;
                 }
-                if(result["result"][i]["classname"].asString() == "five"){
+                if(result["result"][i]["classname"].asString() == "Five"){
                     gesture_signel = GestureSignel_five;
+                    std::cout << "change as GestureSignel_five" << std::endl;
+                     
                 }
-                if(result["result"][i]["classname"].asString() == "ok"){
+                if(result["result"][i]["classname"].asString() == "Ok"){
                     gesture_signel = GestureSignel_ok;
+                    std::cout << "change as GestureSignel_ok" << std::endl;
                 }
                 cv::putText(img, result["result"][i]["classname"].asString(), cv::Point2i(left, top), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 255, 255));
                 cv::rectangle(img, cv::Rect(left, top, width, height), cv::Scalar(255, 0, 0),1, cv::LINE_8,0);
@@ -99,21 +103,25 @@ void img_callback(const sensor_msgs::ImageConstPtr &msgRGB)
         return;
     }
 }
-
-void output(){
-    if(gesture_signel == GestureSignel_ok){ // 前进
-        pub_speed.linear.x = 0.1;
-        pub_speed.angular.z = 0;
-        speed_pub.publish(pub_speed);
-    }
-    if(gesture_signel == GestureSignel_fist){ // 停止
-        pub_speed.linear.x = 0;
-        pub_speed.angular.z = 0;
-        speed_pub.publish(pub_speed);
-    }
-    if(gesture_signel == GestureSignel_five){ // 空闲
-    }
-    sleep(100); // wait 100ms
+void output(void ) {
+    while(1){
+        if(gesture_signel == GestureSignel_ok){ // 前进
+            twist_speed.linear.x = 0.2;
+            twist_speed.angular.z = 0;
+            speed_pub.publish(twist_speed);
+        }
+        if(gesture_signel == GestureSignel_fist){ // 停止
+            twist_speed.linear.x = 0;
+            twist_speed.angular.z = 0;
+            speed_pub.publish(twist_speed);
+        }
+        if(gesture_signel == GestureSignel_five){ // 空闲 
+        //  twist_speed.linear.x = 0;
+        //  twist_speed.angular.z = 0;
+        //  speed_pub.publish(twist_speed);
+        }
+        sleep(0.1);
+    } 
 }
 
 int main(int argc, char ** argv){
@@ -151,11 +159,11 @@ int main(int argc, char ** argv){
     sub_img = nh.subscribe(image_topic, 1, img_callback);
     pub_voice = nh.advertise<std_msgs::String> ("/voiceWords", 1);
     pub_gesture = nh.advertise<slam_semantic_nav_ros::Gesture> ("/GestureSignal", 1);
+    speed_pub = nh.advertise<geometry_msgs::Twist>("cmd_vel",10);
+    std::thread move_control(output); 
+     
 
-    std::thread move_control(output);
-    move_control.detach();
-
-    ros::spin(); 
+    ros::spin();  
     ros::shutdown(); 
     return 0;
 }

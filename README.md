@@ -1,7 +1,7 @@
 <!--
  * @Author: 王培荣
  * @Date: 2019-12-31 15:21:52
- * @LastEditTime : 2020-01-15 14:35:45
+ * @LastEditTime : 2020-01-15 19:16:43
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /catkin_ws/src/orbslam_semantic_nav_ros/README.md
@@ -25,7 +25,7 @@ Have Done:
 
 6. 手势识别控制
 
-7. 手势识别控制
+7. 语音唤醒与识别控制
 
 8. 局部避障与DWA控制
 
@@ -175,6 +175,12 @@ roslaunch slam_semantic_nav_ros gesture_speak.launch
 # 手势识别
 
 ![手势1](image/gesture1.png) ![手势2](image/gesture2.png)
+
+Five手势: 空闲状态，可以由其他节点发送/cmd_vel速度指令进行控制
+
+Ok手势: 前进，只受手势控制，需要手势解锁
+
+Fist手势: 停止状态，只受手势控制，需要手势解锁
 
 ```
 roslaunch slam_semantic_nav_ros gesture_speak.launch
